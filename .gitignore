@@ -1,0 +1,14 @@
+# .gitignore
+
+venv/
+.vscode/
+__pycache__/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# AWS credentials
+.auth_env
+.client_env

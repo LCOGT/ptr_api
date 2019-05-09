@@ -1,0 +1,17 @@
+
+# Toggle local aws: 1 is on, 0 is off.
+LOCAL_AWS=0
+
+REGION=us-east-1
+
+# S3
+BUCKET_NAME = pythonbits
+S3_PORT=5001
+
+
+# SQS
+SQS_PORT=5002
+
+
+# DynamoDB
+DYNAMODB_PORT=5003
