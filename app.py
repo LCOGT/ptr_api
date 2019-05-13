@@ -5,14 +5,16 @@ from flask import Flask, request, jsonify
 import json, boto3, time
 import auth
 from flask_restplus import Api, Resource, fields
+from flask_cors import CORS
 
 
 application = Flask(__name__)
-flaskrestful = Api(app=application)
+api = Api(app=application)
+cors = CORS(application, resources={r"/*": {"origins": "*"}})
 
-api = flaskrestful.namespace('photonranch', description="Communicate between photon ranch observatories and their clients.")
+#api = flaskrestful.namespace('photonranch', description="Communicate between photon ranch observatories and their clients.")
 
-model = flaskrestful.schema_model('Address', {
+model = api.schema_model('Status', {
     'required': ['address'],
     'properties': {
         'mnt<id>_air': {
@@ -31,9 +33,9 @@ model = flaskrestful.schema_model('Address', {
 
 #-----------------------------------------------------------------------------#
 
-@application.route('/', methods=['GET', 'POST'])
+@application.route('/home', methods=['GET', 'POST'])
 def slash():
-    return jsonify({"result": "you've arrived at the home slash"})
+    return "flask api home page"
 
 #-----------------------------------------------------------------------------#
 
@@ -41,6 +43,7 @@ def slash():
 @api.route('/<string:site>/status/')
 class Status(Resource):
 
+    @auth.required
     def get(self, site):
         """
         Get the latest general site status.
@@ -88,7 +91,7 @@ class Command(Resource):
         return commands.get_command(site, mount)
 
     @auth.required
-    @api.expect(model)
+    #@api.expect(model)
     def post(self, site, mount):
         """
         Send a command to the observatory command queue. Authorization required.
@@ -130,14 +133,15 @@ class Upload(Resource):
 #-----------------------------------------------------------------------------#
 
 # Site Configurations
-@application.route('/<site>/config/', methods=['GET'])
-def get_config(site):
-    return sites.get_config(site)
+@api.route('/<string:site>/config/')
+class Config(Resource):
 
-@application.route('/<site>/config/', methods=['PUT'])
-@auth.required
-def put_config(site):
-    return sites.put_config(site)
+    def get(self, site):
+        return sites.get_config(site)
+
+    @auth.required
+    def put(self, site):
+        return sites.put_config(site)
 
         
 

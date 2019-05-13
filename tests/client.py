@@ -20,18 +20,20 @@ class Client:
 
         # AWS cognito account info imported from .env
         dotenv_path = join(dirname(__file__), '.client_env')
-        load_dotenv(dotenv_path)
-        self.region = os.environ.get('REGION')
-        self.userpool_id = os.environ.get('USERPOOL_ID')
-        self.app_id_client = os.environ.get('APP_CLIENT_ID')
-        self.app_client_secret = os.environ.get('APP_CLIENT_SECRET')
-        self.username = os.environ.get('USERNAME')
-        self.password = os.environ.get('PASS')
+        load_dotenv('tests/.client_env')
+        self.region = os.environ.get('client_REGION')
+        self.userpool_id = os.environ.get('client_USERPOOL_ID')
+        self.app_id_client = os.environ.get('client_APP_CLIENT_ID')
+        self.app_client_secret = os.environ.get('client_APP_CLIENT_SECRET')
+        self.username = os.environ.get('client_USERNAME')
+        self.password = os.environ.get('client_PASS')
 
+        print('before self.user')
         self.user = Cognito(self.userpool_id, 
                        self.app_id_client, 
                        client_secret=self.app_client_secret, 
-                       username=self.username)
+                       username=self.username,
+                       user_pool_region=self.region)
 
         # This is only important if we're not on a local mock server.
         if LOCAL_AWS is False:
@@ -39,6 +41,7 @@ class Client:
                 self.user.authenticate(password=self.password)
             except Exception as e:
                     print(e)
+        print('after self.user')
 
     def make_authenticated_header(self):
         header = {}
@@ -47,6 +50,7 @@ class Client:
                 self.user.check_token()
                 header["Authorization"] = f"Bearer {self.user.access_token}"
             except AttributeError as e:
+                print("error inmake_authenticated_header")
                 print(e)
         return header
 
@@ -107,7 +111,6 @@ class Client:
 if __name__=="__main__":
     c = Client()
 
-
     ### Test all endpoints ###
 
     # Sample message bodies. 
@@ -144,12 +147,11 @@ if __name__=="__main__":
         {'uri': 'site1/config/', 'method': 'PUT', 'payload': sample_config},
 
 
-        {'uri': 'site1/command/', 'method': 'POST', 'payload': goto_cmd},
-        {'uri': 'site1/upload/', 'method': 'POST', 'payload': sample_upload_request},
+        {'uri': 'site1/mount1/command/', 'method': 'POST', 'payload': goto_cmd},
 
         {'uri': 'site1/status/', 'method': 'GET', 'payload': None},
         {'uri': 'site1/weather/', 'method': 'GET', 'payload': None},
-        {'uri': 'site1/command/', 'method': 'GET', 'payload': None},
+        {'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
         {'uri': 'site1/config/', 'method': 'GET', 'payload': None},
         {'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
     ]
