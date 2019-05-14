@@ -63,7 +63,7 @@ def get_weather(site):
     return jsonify({
         "site": site, 
         "method": "GET",
-        "content": "weather"
+        "content": status 
         })
 
 def put_weather(site):

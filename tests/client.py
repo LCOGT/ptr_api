@@ -20,7 +20,7 @@ class Client:
 
         # AWS cognito account info imported from .env
         dotenv_path = join(dirname(__file__), '.client_env')
-        load_dotenv('tests/.client_env')
+        load_dotenv(dotenv_path)
         self.region = os.environ.get('client_REGION')
         self.userpool_id = os.environ.get('client_USERPOOL_ID')
         self.app_id_client = os.environ.get('client_APP_CLIENT_ID')
@@ -28,7 +28,6 @@ class Client:
         self.username = os.environ.get('client_USERNAME')
         self.password = os.environ.get('client_PASS')
 
-        print('before self.user')
         self.user = Cognito(self.userpool_id, 
                        self.app_id_client, 
                        client_secret=self.app_client_secret, 
@@ -41,7 +40,12 @@ class Client:
                 self.user.authenticate(password=self.password)
             except Exception as e:
                     print(e)
-        print('after self.user')
+
+    def base_url(self, port):
+        local = f"http://localhost:{port}"
+        eb = "http://ptr-api.us-east-1.elasticbeanstalk.com"
+        return eb
+
 
     def make_authenticated_header(self):
         header = {}
@@ -50,7 +54,6 @@ class Client:
                 self.user.check_token()
                 header["Authorization"] = f"Bearer {self.user.access_token}"
             except AttributeError as e:
-                print("error inmake_authenticated_header")
                 print(e)
         return header
 
@@ -69,9 +72,9 @@ class Client:
     def get(self, uri, payload=None, port=5000):
         header = self.make_authenticated_header()
         if payload is None:
-            response = requests.get(f"http://localhost:{port}/{uri}", headers=header) 
+            response = requests.get(f"{self.base_url(port)}/{uri}", headers=header) 
         else:
-            response = requests.get(f"http://localhost:{port}/{uri}", data=json.dumps(payload), headers=header)
+            response = requests.get(f"{self.base_url(port)}/{uri}", data=json.dumps(payload), headers=header)
         return response.json()
 
     def put(self, uri, payload, port=5000):
@@ -87,7 +90,7 @@ class Client:
         '''
 
         header = self.make_authenticated_header()
-        response = requests.put(f"http://localhost:{port}/{uri}", data=json.dumps(payload), headers=header) 
+        response = requests.put(f"{self.base_url(port)}/{uri}", data=json.dumps(payload), headers=header) 
         return response.json()
 
     def post(self, uri, payload, port=5000):
@@ -103,7 +106,7 @@ class Client:
         '''
 
         header = self.make_authenticated_header()
-        response = requests.post(f"http://localhost:{port}/{uri}", data=json.dumps(payload), headers=header) 
+        response = requests.post(f"{self.base_url(port)}/{uri}", data=json.dumps(payload), headers=header) 
         return response.json()
 
 

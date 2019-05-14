@@ -1,4 +1,4 @@
-# app2.py
+# app.py
 
 from endpoints import status, commands, data, sites
 from flask import Flask, request, jsonify
@@ -10,7 +10,7 @@ from flask_cors import CORS
 
 application = Flask(__name__)
 api = Api(app=application)
-cors = CORS(application, resources={r"/*": {"origins": "*"}})
+#cors = CORS(application, resources={r"/*": {"origins": "*"}})
 
 #api = flaskrestful.namespace('photonranch', description="Communicate between photon ranch observatories and their clients.")
 
