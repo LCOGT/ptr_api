@@ -35,7 +35,7 @@ def get_boto3_s3():
     return s3_r, s3_c
 
 
-def get_image_url(site, filename):
+def get_presigned_url(bucket_name, object_name):
     """
     Generate a publicly-accessible url to the image named <filename>.
 
@@ -44,15 +44,18 @@ def get_image_url(site, filename):
     s3_r, s3_c = get_boto3_s3()
 
     params = {
-        'Bucket': BUCKET_NAME,
+        'Bucket': bucket_name,
         # Key = folder path + filename
-        'Key': f'{site}/'+str(filename)
+        'Key': object_name,
     }
-    url = s3_c.generate_presigned_url(
-        ClientMethod='get_object', 
-        Params=params,
-        ExpiresIn=3600 # URL expires in 1 hour.
-    )
+    try:
+        url = s3_c.generate_presigned_url(
+            ClientMethod='get_object', 
+            Params=params,
+            ExpiresIn=3600 # URL expires in 1 hour.
+        )
+    except Exception as e:
+        print(f"error in generate_presigned_url: {e}")
     return url
 
 def get_presigned_post_url(bucket_name, object_name, 

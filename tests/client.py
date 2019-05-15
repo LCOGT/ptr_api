@@ -39,12 +39,12 @@ class Client:
             try:
                 self.user.authenticate(password=self.password)
             except Exception as e:
-                    print(e)
+                print(f"error: {e}")
 
     def base_url(self, port):
         local = f"http://localhost:{port}"
-        eb = "http://ptr-api.us-east-1.elasticbeanstalk.com"
-        return eb
+        eb = "http://api.photonranch.org"
+        return local
 
 
     def make_authenticated_header(self):
@@ -136,30 +136,29 @@ if __name__=="__main__":
     sample_config = {
         "site": "site1",
         "mounts": [
-            "mount1", "mount2", "mount3"
+            "mount1", "mount2"#, "mount3"
         ]
     }
     sample_upload_request = {
-        "object_name": "raw_data/2019/image001.fits"
+        "object_name": "raw_data/2019/a_file.txt"
     }
 
     # Each item is one request
     endpoints = [
-        {'uri': 'site1/status/', 'method': 'PUT', 'payload': site_status},
-        {'uri': 'site1/weather/', 'method': 'PUT', 'payload': weather_status},
         {'uri': 'site1/config/', 'method': 'PUT', 'payload': sample_config},
+        #{'uri': 'site1/status/', 'method': 'PUT', 'payload': site_status},
+        #{'uri': 'site1/weather/', 'method': 'PUT', 'payload': weather_status},
 
+        #{'uri': 'site1/mount1/command/', 'method': 'POST', 'payload': goto_cmd},
 
-        {'uri': 'site1/mount1/command/', 'method': 'POST', 'payload': goto_cmd},
-
-        {'uri': 'site1/status/', 'method': 'GET', 'payload': None},
-        {'uri': 'site1/weather/', 'method': 'GET', 'payload': None},
-        {'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
-        {'uri': 'site1/config/', 'method': 'GET', 'payload': None},
-        {'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
+        #{'uri': 'site1/status/', 'method': 'GET', 'payload': None},
+        #{'uri': 'site1/weather/', 'method': 'GET', 'payload': None},
+        #{'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
+        #{'uri': 'site1/config/', 'method': 'GET', 'payload': None},
+        #{'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
     ]
 
-    responses = []
+    responses = {}
     for e in endpoints:
         method = e['method']
         if method == 'GET':
@@ -168,9 +167,24 @@ if __name__=="__main__":
             res = c.post(e['uri'], e['payload'])
         if method == 'PUT': 
             res = c.put(e['uri'], e['payload'])
-        responses.append(res)
+        responses[f"{e['uri']}:{e['method']}"] = res
     
             
     # Print all the responses from each endpoint in formatted json. 
     print(json.dumps(responses, indent=2))
     print("Completed all api calls.")
+
+
+    # Upload a file using the presigned post link
+    if False:
+        upload_response = responses['site1/upload/:GET']
+        object_name = 'init_resources.py'
+        with open('aws/init_resources.py', 'rb') as f:
+            files = {'file': (object_name, f)}
+            http_response = requests.post(upload_response['url'], data=upload_response['fields'], files=files)
+        print(f'File upload HTTP status code: {http_response.status_code}')
+
+    # Get a link to download the file just uploaded.
+    if False: 
+        body = {"object_name": "raw_data/2019/a_file.txt"}
+        print(c.get('site1/download/', body))

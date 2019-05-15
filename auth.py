@@ -33,36 +33,20 @@ def required(f):
         if LOCAL_AWS: 
             return f(*args, **kwargs)
         headers = request.headers
-        print("THE HEADER: ")
-        print(headers)
         try:
             auth_header = headers['Authorization'] 
             access_token = auth_header.split()[-1]
-            print("THE ACCESS TOKEN: ")
-            print(access_token)
             cognito_helper.verify_token(access_token, 'access_token', 'access')
             
             #groups = cognito_helper.client.admin_get_list_groups_for_user(Username=)
-            print("Token successfully verified")
             return f(*args, **kwargs)
         # In case there's no authorization header.
         except KeyError as e:
-            print('KeyError: No authorization header value present.')
-            print('KeyError: No authorization header value present.')
-            print('KeyError: No authorization header value present.')
-            print('KeyError: No authorization header value present.')
-            print('KeyError: No authorization header value present.')
-            print('KeyError: No authorization header value present.')
             print('KeyError: No authorization header value present.')
             print(e)
             abort(401)
         # In case the token doesn't verify.
         except TokenVerificationException:
-            print('TokenVerificationException: access token could not be verified.')
-            print('TokenVerificationException: access token could not be verified.')
-            print('TokenVerificationException: access token could not be verified.')
-            print('TokenVerificationException: access token could not be verified.')
-            print('TokenVerificationException: access token could not be verified.')
             print('TokenVerificationException: access token could not be verified.')
             abort(401)
     return wrapped

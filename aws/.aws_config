@@ -5,7 +5,7 @@ LOCAL_AWS=0
 REGION=us-east-1
 
 # S3
-BUCKET_NAME = pythonbits
+BUCKET_NAME = photonranch-001
 S3_PORT=5001
 
 

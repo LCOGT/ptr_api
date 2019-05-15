@@ -14,3 +14,4 @@ __pycache__/
 # AWS credentials
 .auth_env
 tests/.client_env
+api-auth-example/

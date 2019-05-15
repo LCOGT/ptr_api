@@ -11,7 +11,7 @@ def upload(site):
     the key 'object_name' in the json-string body of the request.
 
     Example request body:
-    '{"object_name":"raw_data/2019/image001.fits"}'
+    '{"object_name":"raw_data/2019/a_file.txt"}'
 
     This request will save an image into the main s3 bucket as:
     MAIN_BUCKET_NAME/site/raw_data/2019/img001.fits
@@ -30,3 +30,8 @@ def upload(site):
     content = json.loads(request.get_data())
     object_name = f"{site}/{content['object_name']}"
     return s3.get_presigned_post_url(BUCKET_NAME, object_name)
+
+def download(site):
+    content = json.loads(request.get_data())
+    object_name = f"{site}/{content['object_name']}"
+    return s3.get_presigned_url(BUCKET_NAME, object_name)

@@ -18,6 +18,15 @@ def put_config(site):
     # Receive the JSON config sent in the request.
     config_dict = json.loads(request.get_data())
 
+    url_site = site
+    config_site = config_dict['site']
+
+    # Make sure the site in the config file matches the site in the url.
+    if url_site != config_site:
+        error = f"config site name ({config_site}) does not match site in "\
+            f"url ({site})!"
+        return jsonify({"ERROR": error})
+
     # Set the primary key. Used for retrieval.
     config = {
         "site": site,
@@ -26,7 +35,7 @@ def put_config(site):
     response = dynamodb.insert_item('site_configurations', config)
 
     # Ensure that all resources exist.
-    init_from_config(site, config["configuration"])
+    init_from_config(site, config_dict)
 
     return jsonify(response)
 
@@ -40,15 +49,14 @@ def init_from_config(site, config=None):
         config_json = dynamodb.get_item('site_configurations', key)
         config_dict = json.loads(config_json)
         config = config_dict["configuration"]
-    else:
-        config = json.loads(config)
 
     # SQS queue creation, one queue per mount
     site_mounts = config['mounts'] # a list of string names
     for mount in site_mounts:
-        queue_name = f"{site}_{mount}_queue.fifo"
+        queue_name = f"{site}_{mount}.fifo"
         sqs.get_queue(queue_name)
 
-    # Try creating the dynamodb table for the site. No action if it exists.
+    # Create a dynamodb table for the site (status and weather). Does nothing 
+    # if it already exists.
     table_name= str(site)
     dynamodb.get_table(table_name)

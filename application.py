@@ -1,5 +1,35 @@
 # app.py
 
+
+#-----------------------------------------------------------------------------#
+
+# TODO: sites can post as any observatory by modifying the site name in the url.
+# Ensure credentials only enable sending data from a single identity. 
+#     note: maybe this doesn't matter since it's just program access anyways.
+
+# TODO: change the presigned post url to be more strict about the save
+# directory. Require inputs to specify what's being saved (eg. recent jpg) 
+# and automatically provide the appropriate directory in the url. 
+
+# TODO: make configuration easier to understand. Get the format of config json
+# from Wayne if necessary. 
+
+# TODO: distinguish observatory credentials from user credentials.
+
+
+
+
+# OPTION: Currently, site status and weather are stored in the same dynamodb
+# table. History is not preserved. Keep like this, or make separate weather
+# and status tables with history from date-indexed elements?
+
+
+
+
+
+#-----------------------------------------------------------------------------#
+
+
 from endpoints import status, commands, data, sites
 from flask import Flask, request, jsonify
 import json, boto3, time
@@ -7,10 +37,9 @@ import auth
 from flask_restplus import Api, Resource, fields
 from flask_cors import CORS
 
-
 application = Flask(__name__)
 api = Api(app=application)
-#cors = CORS(application, resources={r"/*": {"origins": "*"}})
+cors = CORS(application, resources={r"/*": {"origins": "*"}})
 
 #api = flaskrestful.namespace('photonranch', description="Communicate between photon ranch observatories and their clients.")
 
@@ -46,7 +75,7 @@ class Status(Resource):
     @auth.required
     def get(self, site):
         """
-        Get the latest general site status.
+        Get the latest general site status. Requires observatory credentials.
         """
         return status.get_status(site)
 
@@ -103,32 +132,46 @@ class Command(Resource):
 # Uploads to S3
 @api.route('/<string:site>/upload/')
 class Upload(Resource):
-    """ 
-    A request for a presigned post url requires the name of the object
-    and the path at which it is stored. This is sent in a single string under
-    the key 'object_name' in the json-string body of the request.
-
-    Example request body:
-    '{"object_name":"raw_data/2019/image001.fits"}'
-
-    This request will save an image into the main s3 bucket as:
-    MAIN_BUCKET_NAME/site/raw_data/2019/img001.fits
-
-    * * *
-
-    Here's how another Python program can use the presigned URL to upload a file:
-
-    with open(object_name, 'rb') as f:
-        files = {'file': (object_name, f)}
-        http_response = requests.post(response['url'], data=response['fields'], files=files)
-    # If successful, returns HTTP status code 204
-    logging.info(f'File upload HTTP status code: {http_response.status_code}')
-
-    """
 
     @auth.required
     def get(self, site):
+        """ 
+        A request for a presigned post url, which requires the name of the object
+        and the path at which it is stored. This is sent in a single string under
+        the key 'object_name' in the json-string body of the request.
+
+        Example request body:
+        '{"object_name":"raw_data/2019/image001.fits"}'
+
+        This request will save an image into the main s3 bucket as:
+        <bucket_name>/site/raw_data/2019/img001.fits
+
+        * * *
+
+        Here's how another Python program can use the presigned URL to upload a file:
+
+        with open(object_name, 'rb') as f:
+            files = {'file': (object_name, f)}
+            http_response = requests.post(response['url'], data=response['fields'], files=files)
+        logging.info(f'File upload HTTP status code: {http_response.status_code}')
+
+        """
         return data.upload(site)
+
+# Downloads from S3
+@api.route('/<string:site>/download/')
+class Download(Resource):
+
+    def get(self, site):
+        """ Get a link to download the specified s3 file.
+
+        JSON body should include {"object_name": "path/to/file"} where the 
+        path to the file starts inside the main site directory (so using the 
+        path "site1/path/to/file" would be wrong).
+        
+        The path is specified as a url parameter.
+        """
+        return data.download(site)
 
 #-----------------------------------------------------------------------------#
 
