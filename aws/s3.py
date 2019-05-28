@@ -9,7 +9,8 @@ from os.path import join, dirname
 from flask import jsonify
 
 # Determine if we will run a local aws serice for testing.
-load_dotenv('aws/.aws_config')
+dotenv_path = join(dirname(__file__), '.aws_config')
+load_dotenv(dotenv_path)
 LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
 S3_PORT = int(os.environ.get('S3_PORT'))
 BUCKET_NAME = str(os.environ.get('BUCKET_NAME'))
@@ -34,7 +35,7 @@ def get_boto3_s3():
         s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
     return s3_r, s3_c
 
-
+# docs: https://bit.ly/2Hqz7Bd
 def get_presigned_url(bucket_name, object_name):
     """
     Generate a publicly-accessible url to the image named <filename>.
@@ -58,6 +59,7 @@ def get_presigned_url(bucket_name, object_name):
         print(f"error in generate_presigned_url: {e}")
     return url
 
+# docs: https://bit.ly/2vYARfw 
 def get_presigned_post_url(bucket_name, object_name, 
                            fields=None, conditions=None, expiration=3600):
     """

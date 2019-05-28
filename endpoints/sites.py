@@ -30,7 +30,7 @@ def put_config(site):
     # Set the primary key. Used for retrieval.
     config = {
         "site": site,
-        "configuration": json.dumps(config_dict)
+        "configuration": config_dict
     }
     response = dynamodb.insert_item('site_configurations', config)
 
@@ -46,8 +46,7 @@ def init_from_config(site, config=None):
     if config is None:
         # Get the config for a site from the global config store
         key = {"site": site}
-        config_json = dynamodb.get_item('site_configurations', key)
-        config_dict = json.loads(config_json)
+        config_dict = dynamodb.get_item('site_configurations', key)
         config = config_dict["configuration"]
 
     # SQS queue creation, one queue per mount
@@ -60,3 +59,6 @@ def init_from_config(site, config=None):
     # if it already exists.
     table_name= str(site)
     dynamodb.get_table(table_name)
+
+def get_all_config():
+    return dynamodb.scan('site_configurations')

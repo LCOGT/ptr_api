@@ -41,8 +41,6 @@ application = Flask(__name__)
 api = Api(app=application)
 cors = CORS(application, resources={r"/*": {"origins": "*"}})
 
-#api = flaskrestful.namespace('photonranch', description="Communicate between photon ranch observatories and their clients.")
-
 model = api.schema_model('Status', {
     'required': ['address'],
     'properties': {
@@ -127,6 +125,13 @@ class Command(Resource):
         """
         return commands.post_command(site, mount)
 
+    def options(self, site, mount):
+        print('inside options')
+        return {'Allow' : 'POST,GET' }, 200, \
+        { 'Access-Control-Allow-Origin': '*', \
+        'Access-Control-Allow-Methods' : 'POST,GET', \
+        'Access-Control-Allow-Headers': '*' }
+
 #-----------------------------------------------------------------------------#
 
 # Uploads to S3
@@ -180,11 +185,27 @@ class Download(Resource):
 class Config(Resource):
 
     def get(self, site):
+        ''' See the saved configuration of the specified site. '''
         return sites.get_config(site)
 
     @auth.required
     def put(self, site):
+        ''' Set the configuration for a site.
+
+        If the configuration has changed since the last entry, additional aws
+        resources will be created as appropriate. 
+
+        Note: if a configuration has changed, it must be updated here before
+        continuing with any other action. 
+
+        '''
         return sites.put_config(site)
 
+@api.route('/all/config/')
+class AllConfig(Resource):
+
+    def get(self):
+        ''' Get all entries in the config table. '''
+        return sites.get_all_config()
         
 

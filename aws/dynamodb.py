@@ -1,6 +1,6 @@
 # aws/dynamodb.py
 
-import boto3, time, os
+import boto3, time, os, json
 from dotenv import load_dotenv
 from os.path import join, dirname
 from moto import mock_dynamodb2
@@ -83,6 +83,15 @@ def get_item(table_name, key):
 
 if LOCAL_AWS:
     get_table('site_configurations', hash_name='site')
+
+def scan(table_name):
+    ''' return all items in the table in a list of dicts '''
+    table = get_table(table_name)
+    response = table.scan()
+    items = {}
+    for entry in response['Items']: 
+        items[entry['site']] = entry['configuration']
+    return items
 
 
 
