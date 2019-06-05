@@ -45,7 +45,7 @@ class Client:
         local = f"http://localhost:{port}"
         eb = "http://api.photonranch.org"
         eb1 = "http://ptr-api.us-east-1.elasticbeanstalk.com"
-        return local 
+        return eb
 
 
     def make_authenticated_header(self):
@@ -58,17 +58,6 @@ class Client:
                 print(e)
         return header
 
-
-
-    def public_api_route(self):
-        response = requests.get("http://localhost:5000/public")
-        return response.text
-
-
-    def private_api_route(self):
-        header = self.make_authenticated_header()
-        response = requests.get("http://localhost:5000/private", headers=header) 
-        return response.text
 
     def get(self, uri, payload=None, port=5000):
         header = self.make_authenticated_header()
@@ -184,8 +173,8 @@ if __name__=="__main__":
             },
         }
     }
-    sample_config4 = {
-        "site": "site4",
+    sample_config5 = {
+        "site": "site5",
         "mounts": {
             "mount1": {
                 "telescopes": {
@@ -225,18 +214,37 @@ if __name__=="__main__":
             },
         }
     }
-    sample_config5 = {
-        site: "site5",
-        enclosures: ["enc1", "enc2"],
-        mounts: ["mount1", "mount2", "mount3"],
-        telescopes: ["t1", "t2", "t3", "t4"],
-        cameras: ["cam1", "cam2", "cam3", "cam4", "cam5"], 
-        filters: ["fil1", "fil2", "fil3", "fil4"],
-        flatscreens: ["flt1", "flt2", "flt3"],
-        focusers: ["foc1", "foc2", "foc3", "foc4"],
-        rotators: ["rot1", "rot2", "rot3"],
-        power_cycle_switch: ["pcs1", "pcs2", "pcs3"],
-        weather: ["wx1", "wx2"],
+    sample_config4 = {
+        "site": "site4",
+        "enclosures": ["enc1", "enc2"],
+        "mounts": ["mount1", "mount2", "mount3"],
+        "telescopes": ["t1", "t2", "t3", "t4"],
+        "cameras": ["cam1", "cam2", "cam3", "cam4", "cam5"], 
+        "filters": ["fil1", "fil2", "fil3", "fil4"],
+        "flatscreens": ["flt1", "flt2", "flt3"],
+        "focusers": ["foc1", "foc2", "foc3", "foc4"],
+        "rotators": ["rot1", "rot2", "rot3"],
+        "power_cycle_switch": ["pcs1", "pcs2", "pcs3"],
+        "weather": ["wx1", "wx2"],
+    }
+    simple_config = {
+        "site": "site4",
+        "mount": {
+            "mount1": {
+                "name": "mount1",
+                "driver": 'ASCOM.Simulator.Telescope',
+            },
+        },
+        "camera": {
+            "cam1": {
+                "name": "cam1",
+                "driver": 'ASCOM.Simulator.Camera',
+            },
+            "cam2": {
+                "name": "cam2",
+                "driver": 'ASCOM.Simulator.Camera',
+            },
+        },
     }
     sample_upload_request = {
         "object_name": "raw_data/2019/a_file2.txt"
@@ -248,6 +256,9 @@ if __name__=="__main__":
         {'uri': 'site2/config/', 'method': 'PUT', 'payload': sample_config2},
         {'uri': 'site3/config/', 'method': 'PUT', 'payload': sample_config3},
         {'uri': 'site4/config/', 'method': 'PUT', 'payload': sample_config4},
+        {'uri': 'site5/config/', 'method': 'PUT', 'payload': sample_config5},
+        {'uri': 'site4/config/', 'method': 'PUT', 'payload': simple_config},
+
         #{'uri': 'site1/status/', 'method': 'PUT', 'payload': site_status},
         #{'uri': 'site1/weather/', 'method': 'PUT', 'payload': weather_status},
 
