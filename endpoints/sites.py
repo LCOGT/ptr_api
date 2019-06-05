@@ -50,7 +50,8 @@ def init_from_config(site, config=None):
         config = config_dict["configuration"]
 
     # SQS queue creation, one queue per mount
-    site_mounts = config['mounts'] # a list of string names
+    #site_mounts = config['mounts'] # a list of string names
+    site_mounts = config.get('mount', {}).keys()
     for mount in site_mounts:
         queue_name = f"{site}_{mount}.fifo"
         sqs.get_queue(queue_name)
