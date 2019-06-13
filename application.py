@@ -70,7 +70,6 @@ def slash():
 @api.route('/<string:site>/status/')
 class Status(Resource):
 
-    @auth.required
     def get(self, site):
         """
         Get the latest general site status. Requires observatory credentials.
