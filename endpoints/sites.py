@@ -58,8 +58,8 @@ def init_from_config(site, config=None):
 
     # Create a dynamodb table for the site (status and weather). Does nothing 
     # if it already exists.
-    table_name= str(site)
-    dynamodb.get_table(table_name)
+    table_name = str(site)
+    dynamodb.create(table_name)
 
 def get_all_config():
     return dynamodb.scan('site_configurations')

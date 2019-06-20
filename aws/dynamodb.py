@@ -17,7 +17,7 @@ def get_boto3_dynamodb():
     if LOCAL_AWS:
         dynamodb_r = boto3.resource('dynamodb', 
                                 region_name=REGION,
-                                endpoint_url=f'http://127.0.0.1:{DYNAMODB_PORT}')
+                                endpoint_url=f'http://localhost:{DYNAMODB_PORT}')
         dynamodb_c = boto3.client('dynamodb', 
                                 region_name=REGION,
                                 endpoint_url=f'http://localhost:{DYNAMODB_PORT}')
@@ -27,11 +27,8 @@ def get_boto3_dynamodb():
         
     return dynamodb_r, dynamodb_c
 
-
-def get_table(table_name, hash_name='Type', read_throughput=2, write_throughput=2):
-
+def create_table(table_name, hash_name='Type', read_throughput=2, write_throughput=2):
     dynamodb_r, dynamodb_c = get_boto3_dynamodb()
-
     try:
         table = dynamodb_r.create_table(
             TableName=table_name,
@@ -58,6 +55,11 @@ def get_table(table_name, hash_name='Type', read_throughput=2, write_throughput=
     return table
 
 
+def get_table(table_name):
+    dynamodb_r, dynamodb_c = get_boto3_dynamodb()
+    return dynamodb_r.Table(table_name) 
+
+
 def insert_item(table_name, item):
     """
     Insert item into database.
@@ -81,9 +83,6 @@ def get_item(table_name, key):
     item = response['Item']
     return item
 
-if LOCAL_AWS:
-    get_table('site_configurations', hash_name='site')
-
 def scan(table_name):
     ''' return all items in the table in a list of dicts '''
     table = get_table(table_name)
@@ -92,6 +91,9 @@ def scan(table_name):
     for entry in response['Items']: 
         items[entry['site']] = entry['configuration']
     return items
+
+if LOCAL_AWS:
+    create_table('site_configurations', hash_name='site')
 
 
 

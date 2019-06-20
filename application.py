@@ -3,6 +3,9 @@
 
 #-----------------------------------------------------------------------------#
 
+# TODO: any request for /some-new-site/status creates a new dynamodb table for
+# 'some-new-site'. This could easily get out of hand.
+
 # TODO: sites can post as any observatory by modifying the site name in the url.
 # Ensure credentials only enable sending data from a single identity. 
 #     note: maybe this doesn't matter since it's just program access anyways.

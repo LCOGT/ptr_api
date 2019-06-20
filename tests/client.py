@@ -45,7 +45,7 @@ class Client:
         local = f"http://localhost:{port}"
         eb = "http://api.photonranch.org"
         eb1 = "http://ptr-api.us-east-1.elasticbeanstalk.com"
-        return eb
+        return local 
 
 
     def make_authenticated_header(self):
@@ -245,6 +245,18 @@ if __name__=="__main__":
                 "driver": 'ASCOM.Simulator.Camera',
             },
         },
+        "filter": {
+            "fil1": {
+                "name": "fil1",
+                "driver": "ASCOM.Simulator.Filter",
+            }
+        },
+        "telescope": {
+            "telescope1": {
+                "name": "telescope1",
+                "driver": "ASCOM.Simulator.Telescope"
+            }
+        }
     }
     sample_upload_request = {
         "object_name": "raw_data/2019/a_file2.txt"
@@ -252,11 +264,11 @@ if __name__=="__main__":
 
     # Each item is one request
     endpoints = [
-        {'uri': 'site1/config/', 'method': 'PUT', 'payload': sample_config},
-        {'uri': 'site2/config/', 'method': 'PUT', 'payload': sample_config2},
-        {'uri': 'site3/config/', 'method': 'PUT', 'payload': sample_config3},
-        {'uri': 'site4/config/', 'method': 'PUT', 'payload': sample_config4},
-        {'uri': 'site5/config/', 'method': 'PUT', 'payload': sample_config5},
+        #{'uri': 'site1/config/', 'method': 'PUT', 'payload': sample_config},
+        #{'uri': 'site2/config/', 'method': 'PUT', 'payload': sample_config2},
+        #{'uri': 'site3/config/', 'method': 'PUT', 'payload': sample_config3},
+        #{'uri': 'site4/config/', 'method': 'PUT', 'payload': sample_config4},
+        #{'uri': 'site5/config/', 'method': 'PUT', 'payload': sample_config5},
         {'uri': 'site4/config/', 'method': 'PUT', 'payload': simple_config},
 
         #{'uri': 'site1/status/', 'method': 'PUT', 'payload': site_status},
