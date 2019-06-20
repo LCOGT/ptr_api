@@ -8,12 +8,14 @@ from dotenv import load_dotenv
 import os
 from os.path import join, dirname
 
-# Determine if we will run a local aws serice for testing.
-load_dotenv('aws/.aws_config')
+# Determine if we will run a local aws serice for testing
+dotenv_path_awsconfig = join(dirname(__file__),'aws/.aws_config')
+load_dotenv(dotenv_path_awsconfig)
 LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
 
 # AWS cognito account info imported from .env
-load_dotenv('.auth_env')
+dotenv_path_authenv = join(dirname(__file__),'.auth_env')
+load_dotenv(dotenv_path_authenv)
 REGION = os.environ.get('auth_REGION')
 USERPOOL_ID = os.environ.get('auth_USERPOOL_ID')
 APP_CLIENT_ID = os.environ.get('auth_APP_CLIENT_ID')
