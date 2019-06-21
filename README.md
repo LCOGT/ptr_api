@@ -53,7 +53,7 @@ Enter the directory labeled 'tests' in order to access the testing client applic
 $ cd tests
 ```
 
-Instantiate and populate a file titled '.client_env' within the tests directory. This file provides identification information from Amazon Cognito in order for the client application to send test all endpoints specified by the API.
+Instantiate and populate a file titled '.client_env' within the tests directory. This file provides identification information from Amazon Cognito in order for the client application to test all endpoints specified by the API.
 ```
 ~ client_REGION = region
 ~ client_USERPOOL_ID = userpool id
