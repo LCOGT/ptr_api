@@ -7,7 +7,7 @@ This repo contains Photon Ranch's RESTful API built using the Flask web framewor
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Setting up the project
-To begin working, first aquire the ptr-flask-api repository from github and set up a Python virtual environment through which to configure and run the API.
+To begin working, first acquire the ptr-flask-api repository from github and set up a Python virtual environment.
 
 ##### Clone the repo
 ```bash
@@ -30,29 +30,9 @@ $ source venv/virtual-environment-name/bin/activate
 ### Install dependencies
 Use the python package-management system in order to install the following required modules within the virtual environment:
 ```bash
-$ pip install --upgrade pip   
+$ pip install -r requirements.txt   
 ```
-```bash
-$ pip install flask                 
-```
-```bash
-$ pip install flask_restplus 
-```
-```bash
-$ pip install flask_cors 
-```
-```bash
-$ pip install boto3
-```
-```bash
-$ pip install -U python-dotenv  
-```
-```bash
-$ pip install moto 
-```
-```bash
-$ pip install warrant 
-```
+
 
 ### Generate required config files
 Next, it is neccesary to create certain config files that will hold environment variables to be used by the API as well as client application. The values for these variables can be obtained from the LCOGT System Information Sheet.
