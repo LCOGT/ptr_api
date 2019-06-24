@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 
 # Determine if we will run a local aws serice for testing.
-dotenv_path_awsconfig = join(dirname(__file__),'aws/.aws_config')
+dotenv_path_awsconfig = join(dirname(__file__),'../aws/.aws_config')
 load_dotenv(dotenv_path_awsconfig)
 LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
 
