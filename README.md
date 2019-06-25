@@ -1,18 +1,18 @@
-# ptr-flask-api
+# ptr_api
 
 This repo contains Photon Ranch's RESTful API built using the Flask web framework. This API provides a method of communication between AWS and Photon Ranch's front-end web application as well as observatory-side applications.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+These instructions will get you a copy of the API up and running on your local machine for development and testing purposes.
 
 ### Setting up the project
-To begin working, first acquire the ptr-flask-api repository from github and set up a Python virtual environment.
+To begin working, first acquire the ptr_api repository from github and set up a Python virtual environment.
 
 ##### Clone the repo
 ```bash
-$ git clone https://github.com/rmotr/flask-api-example.git
-$ cd flask-api-example
+$ git clone 'repo url'
+$ cd flask_api
 ```
 
 ##### Create Python virtual environment - version 3.6 or higher
