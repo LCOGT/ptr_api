@@ -312,6 +312,6 @@ if __name__=="__main__":
         print(f'File upload HTTP status code: {http_response.status_code}')
 
     # Get a link to download the file just uploaded.
-    if False: 
-        body = {"object_name": "raw_data/2019/a_file2.txt"}
-        print(c.get('site1/download/', body))
+    if True: 
+        body = {"object_name": "raw_data/2019/image001.fits"}
+        print(c.post('site1/download/', body))

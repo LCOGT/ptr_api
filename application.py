@@ -160,7 +160,7 @@ class Upload(Resource):
 # Downloads from S3
 class Download(Resource):
 
-    def get(self, site):
+    def post(self, site):
         '''
         Get a link to download the specified s3 file.
 
