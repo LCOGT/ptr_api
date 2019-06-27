@@ -25,6 +25,8 @@
 # table. History is not preserved. Keep like this, or make separate weather
 # and status tables with history from date-indexed elements?
 
+# Testing a new git workflow.
+
 #-----------------------------------------------------------------------------#
 
 from endpoints import status, commands, data, sites
