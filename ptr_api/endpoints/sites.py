@@ -1,7 +1,7 @@
 # endpoints/site_config.py
 
 from flask import jsonify, request
-from aws import s3, sqs, dynamodb
+from ptr_api.aws import s3, sqs, dynamodb
 import json
 
 

@@ -1,4 +1,4 @@
-from aws import sqs
+from ptr_api.aws import sqs
 from flask import request
 import json
 

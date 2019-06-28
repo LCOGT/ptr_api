@@ -1,6 +1,6 @@
 from flask import request, jsonify
 import json, os
-from aws import s3
+from ptr_api.aws import s3
 
 BUCKET_NAME = str(os.environ.get('BUCKET_NAME'))
 

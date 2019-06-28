@@ -29,7 +29,7 @@
 
 #-----------------------------------------------------------------------------#
 
-from endpoints import status, commands, data, sites
+from ptr_api.endpoints import status, commands, data, sites
 from flask import Flask, request, jsonify
 import json, boto3, time
 import auth
