@@ -61,5 +61,11 @@ def init_from_config(site, config=None):
     table_name = str(site)
     dynamodb.create_table(table_name)
 
+    # Create a dynamodb table to track data from each mount. Does nothing if
+    # it already exists.
+    for mount in site_mounts:
+        image_dynamodb_name = f"{site}_{mount}_images"
+        dynamodb.create_table(image_dynamodb_name)
+
 def get_all_config():
     return dynamodb.scan('site_configurations')
