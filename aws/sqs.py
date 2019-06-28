@@ -24,8 +24,22 @@ def get_boto3_sqs():
         sqs_c = boto3.client('sqs', REGION)
     return sqs_r, sqs_c
 
-
 def get_queue(queue_name):
+
+    queue_attributes = {
+        'FifoQueue': 'true',
+        'DelaySeconds': '0',
+        'MessageRetentionPeriod': '900', # 15 minutes to complete a command, else deleted.
+        'ContentBasedDeduplication': 'true'
+    }
+
+    sqs_r, sqs_c = get_boto3_sqs()
+
+    queue = sqs_r.get_queue_by_name(QueueName=queue_name)
+
+    return queue.url, sqs_r, sqs_c
+
+def create_queue(queue_name):
 
     queue_attributes = {
         'FifoQueue': 'true',

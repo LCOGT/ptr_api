@@ -54,12 +54,12 @@ def init_from_config(site, config=None):
     site_mounts = config.get('mount', {}).keys()
     for mount in site_mounts:
         queue_name = f"{site}_{mount}.fifo"
-        sqs.get_queue(queue_name)
+        sqs.create_queue(queue_name)
 
     # Create a dynamodb table for the site (status and weather). Does nothing 
     # if it already exists.
     table_name = str(site)
-    dynamodb.create(table_name)
+    dynamodb.create_table(table_name)
 
 def get_all_config():
     return dynamodb.scan('site_configurations')
