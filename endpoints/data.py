@@ -1,6 +1,6 @@
 from flask import request, jsonify
 import json, os
-from aws import s3
+from aws import s3, dynamodb
 
 BUCKET_NAME = str(os.environ.get('BUCKET_NAME'))
 
@@ -35,3 +35,29 @@ def download(site):
     content = json.loads(request.get_data())
     object_name = f"{site}/{content['object_name']}"
     return s3.get_presigned_url(BUCKET_NAME, object_name)
+
+def get_recent_image(site):
+    table_name = f"{site}_images"
+    table = dynamodb.get_table(table_name)
+    response = table.scan()
+
+    items = []
+    for i in response['Items']:
+        items.append((i, int(float(i['upload_time']))))
+
+    if len(items) != 0:
+        items.sort(key=lambda x: x[1])
+        object_name = items[0][0]['path']
+        url = s3.get_presigned_url(BUCKET_NAME, object_name)
+        return url
+    return ''
+
+# Helper class to convert a DynamoDB item to JSON.
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            if o % 1 > 0:
+                return float(o)
+            else:
+                return int(o)
+        return super(DecimalEncoder, self).default(o)

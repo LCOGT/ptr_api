@@ -174,6 +174,11 @@ class Download(Resource):
         '''
         return data.download(site)
 
+class LatestImage(Resource):
+
+    def get(self, site):
+        return data.get_recent_image(site)
+
 #-----------------------------------------------------------------------------#
 
 # Site Configurations
@@ -215,6 +220,7 @@ api.add_resource(Weather,'/<string:site>/weather/')
 api.add_resource(Command,'/<string:site>/<string:mount>/command/')
 api.add_resource(Upload,'/<string:site>/upload/')
 api.add_resource(Download,'/<string:site>/download/')
+api.add_resource(LatestImage, '/<string:site>/latest_image/')
 api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
 
