@@ -45,12 +45,15 @@ def get_recent_image(site):
     for i in response['Items']:
         items.append((i, int(float(i['upload_time']))))
 
+    url = ''
+    filename = ''
     if len(items) != 0:
         items.sort(key=lambda x: x[1])
-        object_name = items[0][0]['path']
+        latest_item = items[-1][0]
+        object_name = latest_item['path']
+        filename = latest_item['filename']
         url = s3.get_presigned_url(BUCKET_NAME, object_name)
-        return url
-    return ''
+    return json.dumps({"url": url, "filename": filename})
 
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
