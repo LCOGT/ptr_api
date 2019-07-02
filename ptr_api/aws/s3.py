@@ -8,12 +8,7 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 from flask import Flask, jsonify
 
-
 REGION = "us-east-1"
-
-def get_boto3_s3():
-    s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
-    return s3_c
 
 # docs: https://bit.ly/2Hqz7Bd
 def get_presigned_url(bucket_name, object_name):
@@ -22,7 +17,7 @@ def get_presigned_url(bucket_name, object_name):
 
     Files are saved to the provided site folder.
     """
-    s3_c = get_boto3_s3()
+    s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 
     params = {
         'Bucket': bucket_name,
@@ -52,7 +47,7 @@ def get_presigned_post_url(bucket_name, object_name,
     logging.info(f'File upload HTTP status code: {http_response.status_code}')
 
     """
-    s3_c = get_boto3_s3()
+    s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 
     try:
         response = s3_c.generate_presigned_post(bucket_name,

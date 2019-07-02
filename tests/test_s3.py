@@ -8,12 +8,6 @@ from moto import mock_s3
 from flask import Flask
 
 @mock_s3
-def test_boto3_connection():
-    s3_connection = s3.get_boto3_s3()
-
-    assert s3_connection is not None
-
-@mock_s3
 def test_get_presigned_url():
     BUCKET_NAME = 'test_bucket'
     OBJECT_NAME = 'test_object'
