@@ -38,6 +38,18 @@ def get_presigned_url(bucket_name, object_name):
 def get_presigned_post_url(bucket_name, object_name, 
                            fields=None, conditions=None, expiration=3600):
     """
+    A request for a presigned post url requires the name of the object
+    and the path at which it is stored. This is sent in a single string under
+    the key 'object_name' in the json-string body of the request.
+
+    Example request body:
+    '{"object_name":"raw_data/2019/a_file.txt"}'
+
+    This request will save an image into the main s3 bucket as:
+    MAIN_BUCKET_NAME/site/raw_data/2019/img001.fits
+    
+    * * *
+
     Here's how another Python program can use the presigned URL to upload a file:
 
     with open(object_name, 'rb') as f:
@@ -61,13 +73,3 @@ def get_presigned_post_url(bucket_name, object_name,
 
     print(jsonify(response))
     return jsonify(response)
-
-
-'''
-if __name__=='__main__':
-    s = S3('main')
-    dirpath = os.path.abspath(os.path.dirname(__file__))
-    filename = os.path.join(dirpath, 'data/base.jpg')
-    destination = 'ccd_test2.jpg'
-    s.upload_file(destination)
-'''
