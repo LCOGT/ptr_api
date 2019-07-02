@@ -4,11 +4,9 @@ import boto3
 import os
 from botocore.client import Config
 from moto import mock_s3
-from dotenv import load_dotenv
-from os.path import join, dirname
-from flask import Flask, jsonify
 
 REGION = "us-east-1"
+URL_EXPIRATION = 3600 # Seconds until URL expiration
 
 # docs: https://bit.ly/2Hqz7Bd
 def get_presigned_url(bucket_name, object_name):
@@ -21,22 +19,20 @@ def get_presigned_url(bucket_name, object_name):
 
     params = {
         'Bucket': bucket_name,
-        # Key = folder path + filename
-        'Key': object_name,
+        'Key': object_name, # Key = folder path + filename
     }
     try:
         url = s3_c.generate_presigned_url(
             ClientMethod='get_object', 
             Params=params,
-            ExpiresIn=3600 # URL expires in 1 hour.
+            ExpiresIn=URL_EXPIRATION 
         )
     except Exception as e:
         print(f"error in generate_presigned_url: {e}")
     return url
 
 # docs: https://bit.ly/2vYARfw 
-def get_presigned_post_url(bucket_name, object_name, 
-                           fields=None, conditions=None, expiration=3600):
+def get_presigned_post_url(bucket_name, object_name):
     """
     A request for a presigned post url requires the name of the object
     and the path at which it is stored. This is sent in a single string under
@@ -62,14 +58,13 @@ def get_presigned_post_url(bucket_name, object_name,
     s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 
     try:
-        response = s3_c.generate_presigned_post(bucket_name,
-                                                object_name,
-                                                Fields=fields,
-                                                Conditions=conditions,
-                                                ExpiresIn=expiration)
+        response = s3_c.generate_presigned_post(
+            Bucket=bucket_name,
+            Key=object_name,
+            ExpiresIn=URL_EXPIRATION 
+            )
     except ClientError as e:
         print(e)
-        return jsonify({'error': e})
+        return {'error': e}
 
-    print(jsonify(response))
-    return jsonify(response)
+    return response
