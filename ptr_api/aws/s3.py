@@ -3,10 +3,10 @@
 import boto3
 import os
 from botocore.client import Config
-from moto import mock_s3
 
 REGION = "us-east-1"
 URL_EXPIRATION = 3600 # Seconds until URL expiration
+S3_C = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 
 # docs: https://bit.ly/2Hqz7Bd
 def get_presigned_url(bucket_name, object_name):
@@ -15,7 +15,6 @@ def get_presigned_url(bucket_name, object_name):
 
     Files are saved to the provided site folder.
     """
-    s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 
     params = {
         'Bucket': bucket_name,
@@ -23,7 +22,7 @@ def get_presigned_url(bucket_name, object_name):
     }
 
     try:
-        url = s3_c.generate_presigned_url(
+        url = S3_C.generate_presigned_url(
             ClientMethod='get_object', 
             Params=params,
             ExpiresIn=URL_EXPIRATION 
@@ -57,10 +56,9 @@ def get_presigned_post_url(bucket_name, object_name):
     logging.info(f'File upload HTTP status code: {http_response.status_code}')
 
     """
-    s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 
     try:
-        response = s3_c.generate_presigned_post(
+        response = S3_C.generate_presigned_post(
             Bucket=bucket_name,
             Key=object_name,
             ExpiresIn=URL_EXPIRATION 
