@@ -5,6 +5,10 @@ import boto3
 from botocore.client import Config
 from moto import mock_s3
 
+<<<<<<< Updated upstream
+=======
+from flask import Flask
+>>>>>>> Stashed changes
 
 @mock_s3
 def test_boto3_connection():
@@ -13,6 +17,7 @@ def test_boto3_connection():
     assert s3_c_connection is not None
 
 @mock_s3
+<<<<<<< Updated upstream
 def test_get_presigned_post_url():
     #with app.app_context():
     BUCKET_NAME = 'test_bucket'
@@ -22,6 +27,31 @@ def test_get_presigned_post_url():
     print(json_url)
 
     assert True
+=======
+def test_get_presigned_url():
+    BUCKET_NAME = 'test_bucket'
+    OBJECT_NAME = 'test_object'
+    test_url = s3.get_presigned_url
+
+    assert test_url is not None
+
+        
+@mock_s3
+def test_get_presigned_url_error():
+    with pytest.raises(Exception):
+        assert s3.get_presigned_url(BUCKET_NAME)
+
+#@mock_s3
+#def test_get_presigned_post_url():
+#    app = Flask(__name__)
+ #   with app.app_context():
+ #       BUCKET_NAME = 'test_bucket'
+ #       OBJECT_NAME = 'test_object'
+#
+ #       json_url = s3.get_presigned_post_url(BUCKET_NAME, OBJECT_NAME)
+ #       
+ #       assert True
+>>>>>>> Stashed changes
 
 
 
