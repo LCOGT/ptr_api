@@ -12,7 +12,7 @@ import re
 def test_get_presigned_url():
     BUCKET_NAME = 'test_bucket'
     OBJECT_NAME = 'test_object'
-    test_url = s3.get_presigned_url
+    url = s3.get_presigned_url(BUCKET_NAME, OBJECT_NAME)
     verify_is_url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+] [!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', url)
 
     assert verify_is_url is not None
