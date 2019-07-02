@@ -9,16 +9,13 @@ def test_get_presigned_url():
     BUCKET_NAME = 'test_bucket'
     OBJECT_NAME = 'test_object'
     url = s3.get_presigned_url(BUCKET_NAME, OBJECT_NAME)
+    expected_url= "https://s3.amazonaws.com/" + BUCKET_NAME + '/' + OBJECT_NAME
 
-    verify_url = re.search('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+] [!*\\(\\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', url)
+    verify_url = re.search(expected_url, url)
     verify_region = re.search(s3.REGION, url)
-    verify_bucket = re.search(BUCKET_NAME, url)
-    verify_object = re.search(OBJECT_NAME, url)
 
     assert verify_url is not None
     assert verify_region is not None
-    assert verify_bucket is not None
-    assert verify_object is not None
 
         
 @mock_s3
@@ -34,6 +31,8 @@ def test_get_presigned_post_url():
        BUCKET_NAME = 'test_bucket'
        OBJECT_NAME = 'test_object'
 
-       json_url = s3.get_presigned_post_url(BUCKET_NAME, OBJECT_NAME)
+       response_dict = s3.get_presigned_post_url(BUCKET_NAME, OBJECT_NAME)
+       url = response_dict['url']
+       expected_url = "https://s3.amazonaws.com/" + BUCKET_NAME
 
-       assert True
+       assert url == expected_url
