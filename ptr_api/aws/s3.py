@@ -6,34 +6,15 @@ from botocore.client import Config
 from moto import mock_s3
 from dotenv import load_dotenv
 from os.path import join, dirname
-from flask import jsonify
+from flask import Flask, jsonify
 
-# Determine if we will run a local aws serice for testing.
-dotenv_path = join(dirname(__file__), '.aws_config')
-load_dotenv(dotenv_path)
-LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
-S3_PORT = int(os.environ.get('S3_PORT'))
-BUCKET_NAME = str(os.environ.get('BUCKET_NAME'))
-REGION = str(os.environ.get('REGION'))
+application = Flask(__name__)
+api = Api(app=application)
+REGION = "us-east-1"
 
 def get_boto3_s3():
-
-    # If we want a local mock s3:
-    if LOCAL_AWS:
-        s3_r = boto3.resource('s3', 
-                               region_name=REGION,
-                               config=Config(signature_version='s3v4'), 
-                               endpoint_url=f'http://localhost:{S3_PORT}')
-        s3_c = boto3.client('s3', 
-                             region_name=REGION,
-                             config=Config(signature_version='s3v4'), 
-                             endpoint_url=f'http://localhost:{S3_PORT}')
-
-    # If we want a real s3 instance: 
-    else: 
-        s3_r = boto3.resource('s3', REGION, config=Config(signature_version='s3v4'))
-        s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
-    return s3_r, s3_c
+    s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
+    return s3_c
 
 # docs: https://bit.ly/2Hqz7Bd
 def get_presigned_url(bucket_name, object_name):
@@ -42,7 +23,7 @@ def get_presigned_url(bucket_name, object_name):
 
     Files are saved to the provided site folder.
     """
-    s3_r, s3_c = get_boto3_s3()
+    s3_c = get_boto3_s3()
 
     params = {
         'Bucket': bucket_name,
@@ -72,7 +53,7 @@ def get_presigned_post_url(bucket_name, object_name,
     logging.info(f'File upload HTTP status code: {http_response.status_code}')
 
     """
-    s3_r, s3_c = get_boto3_s3()
+    s3_c = get_boto3_s3()
 
     try:
         response = s3_c.generate_presigned_post(bucket_name,
@@ -84,6 +65,7 @@ def get_presigned_post_url(bucket_name, object_name,
         print(e)
         return jsonify({'error': e})
 
+    print(jsonify(response))
     return jsonify(response)
 
 
