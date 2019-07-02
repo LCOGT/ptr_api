@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 from flask import Flask, jsonify
 
-application = Flask(__name__)
-api = Api(app=application)
+
 REGION = "us-east-1"
 
 def get_boto3_s3():
