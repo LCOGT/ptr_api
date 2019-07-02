@@ -21,6 +21,7 @@ def get_presigned_url(bucket_name, object_name):
         'Bucket': bucket_name,
         'Key': object_name, # Key = folder path + filename
     }
+
     try:
         url = s3_c.generate_presigned_url(
             ClientMethod='get_object', 
@@ -29,6 +30,7 @@ def get_presigned_url(bucket_name, object_name):
         )
     except Exception as e:
         print(f"error in generate_presigned_url: {e}")
+        
     return url
 
 # docs: https://bit.ly/2vYARfw 

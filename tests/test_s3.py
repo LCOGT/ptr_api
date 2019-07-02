@@ -17,12 +17,6 @@ def test_get_presigned_url():
     assert verify_url is not None
     assert verify_region is not None
 
-        
-@mock_s3
-def test_get_presigned_url_error():
-    with pytest.raises(Exception):
-        assert s3.get_presigned_url(BUCKET_NAME)
-
 
 @mock_s3
 def test_get_presigned_post_url():
