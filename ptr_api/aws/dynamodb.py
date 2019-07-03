@@ -6,10 +6,8 @@ from os.path import join, dirname
 from moto import mock_dynamodb2
 
 # Determine if we will run a local aws serice for testing.
-load_dotenv('aws/.aws_config')
-LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
-DYNAMODB_PORT = int(os.environ.get('DYNAMODB_PORT'))
-REGION = str(os.environ.get('REGION'))
+LOCAL_AWS = 0
+REGION = 'us-east-1'
 
 
 def get_boto3_dynamodb():
