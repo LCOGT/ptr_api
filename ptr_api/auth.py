@@ -20,7 +20,7 @@ APP_CLIENT_SECRET = os.environ.get('auth_APP_CLIENT_SECRET')
 # Object (from warrant module) used to verify access tokens. 
 cognito_helper = Cognito(USERPOOL_ID, APP_CLIENT_ID, 
                          client_secret=APP_CLIENT_SECRET, 
-                         user_pool_region=REGION )
+                         user_pool_region=REGION)
 
 # This decorator only returns the decorated function if it has a valid 
 # access token. Otherwise, it will return a 401 UNAUTHORIZED response..
@@ -32,7 +32,7 @@ def required(f):
             auth_header = headers['Authorization'] 
             access_token = auth_header.split()[-1]
             cognito_helper.verify_token(access_token, 'access_token', 'access')
-            
+    
             #groups = cognito_helper.client.admin_get_list_groups_for_user(Username=)
             return f(*args, **kwargs)
         # In case there's no authorization header.

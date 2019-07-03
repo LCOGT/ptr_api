@@ -11,9 +11,10 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 
 # Determine if we will run a local aws serice for testing.
-dotenv_path_awsconfig = join(dirname(__file__),'../aws/.aws_config')
-load_dotenv(dotenv_path_awsconfig)
-LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
+#dotenv_path_awsconfig = join(dirname(__file__),'../aws/.aws_config')
+#load_dotenv(dotenv_path_awsconfig)
+#LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
+LOCAL_AWS = False
 
 class Client:
 
@@ -79,7 +80,6 @@ class Client:
         Return: 
             json response from the request.
         '''
-
         header = self.make_authenticated_header()
         response = requests.put(f"{self.base_url(port)}/{uri}", data=json.dumps(payload), headers=header) 
         return response.json()
@@ -95,7 +95,6 @@ class Client:
         Return: 
             json response from the request.
         '''
-
         header = self.make_authenticated_header()
         response = requests.post(f"{self.base_url(port)}/{uri}", data=json.dumps(payload), headers=header) 
         return response.json()
@@ -298,20 +297,20 @@ if __name__=="__main__":
     
             
     # Print all the responses from each endpoint in formatted json. 
-    print(json.dumps(responses, indent=2))
+    #print(json.dumps(responses, indent=2))
     print("Completed all api calls.")
 
 
     # Upload a file using the presigned post link
-    if False:
-        upload_response = responses['site1/upload/:GET']
-        object_name = 'init_resources.py'
-        with open('aws/init_resources.py', 'rb') as f:
-            files = {'file': (object_name, f)}
-            http_response = requests.post(upload_response['url'], data=upload_response['fields'], files=files)
-        print(f'File upload HTTP status code: {http_response.status_code}')
+    #if False:
+    #    upload_response = responses['site1/upload/:GET']
+     #   object_name = 'init_resources.py'
+     #   with open('aws/init_resources.py', 'rb') as f:
+      #      files = {'file': (object_name, f)}
+      #      http_response = requests.post(upload_response['url'], data=upload_response['fields'], files=files)
+     #   print(f'File upload HTTP status code: {http_response.status_code}')
 
     # Get a link to download the file just uploaded.
-    if True: 
-        body = {"object_name": "raw_data/2019/image001.fits"}
-        print(c.post('site1/download/', body))
+    #if True: 
+     #   body = {"object_name": "raw_data/2019/image001.fits"}
+     #   print(c.post('site1/download/', body))
