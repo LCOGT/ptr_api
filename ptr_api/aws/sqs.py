@@ -1,15 +1,7 @@
-# aws/sqs.py
-
 import boto3
-import sys,time,random,json, subprocess, os
-from moto import mock_sqs
-from dotenv import load_dotenv
-from os.path import join, dirname
+import os
 
-# Determine if we will run a local aws serice for testing.
-load_dotenv('aws/.aws_config')
-LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
-SQS_PORT = int(os.environ.get('SQS_PORT'))
+
 REGION = str(os.environ.get('REGION'))
 SQS_R = boto3.resource('sqs', REGION)
 SQS_C = boto3.client('sqs', REGION)
