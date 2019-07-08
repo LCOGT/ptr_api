@@ -2,7 +2,7 @@ import boto3
 import os
 
 
-REGION = str(os.environ.get('REGION'))
+REGION = 'us-east-1'
 SQS_R = boto3.resource('sqs', REGION)
 SQS_C = boto3.client('sqs', REGION)
 
