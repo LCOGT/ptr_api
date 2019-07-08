@@ -16,7 +16,11 @@ def get_command(site, mount='mount1'):
 def post_command(site, mount='mount1'):
     queue_name = f"{site}_{mount}.fifo"
     content = json.loads(request.get_data())
+    print(content)
     print(json.dumps(content))
     res = sqs.send_to_queue(queue_name, json.dumps(content))
+    print('AAAAAAAAAAAAA')
+    print(res)
+    print('AAAAAAAAAAAAAAA')
     return json.dumps(res)
 
