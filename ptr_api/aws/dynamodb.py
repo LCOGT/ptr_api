@@ -9,24 +9,17 @@ from moto import mock_dynamodb2
 LOCAL_AWS = 0
 REGION = 'us-east-1'
 
+dynamodb_r = boto3.resource('dynamodb', 'us-east-1')
+dynamodb_c = boto3.client('dynamodb', 'us-east-1')
 
-def get_boto3_dynamodb():
+#def get_boto3_dynamodb():
+#    dynamodb_r = boto3.resource('dynamodb', 'us-east-1')
+#    dynamodb_c = boto3.client('dynamodb', 'us-east-1')
+#    
+#    return dynamodb_r, dynamodb_c
 
-    if LOCAL_AWS:
-        dynamodb_r = boto3.resource('dynamodb', 
-                                region_name=REGION,
-                                endpoint_url=f'http://localhost:{DYNAMODB_PORT}')
-        dynamodb_c = boto3.client('dynamodb', 
-                                region_name=REGION,
-                                endpoint_url=f'http://localhost:{DYNAMODB_PORT}')
-    else:
-        dynamodb_r = boto3.resource('dynamodb', 'us-east-1')
-        dynamodb_c = boto3.client('dynamodb', 'us-east-1')
-        
-    return dynamodb_r, dynamodb_c
 
 def create_table(table_name, hash_name='Type', read_throughput=2, write_throughput=2):
-    dynamodb_r, dynamodb_c = get_boto3_dynamodb()
     try:
         table = dynamodb_r.create_table(
             TableName=table_name,
@@ -48,13 +41,12 @@ def create_table(table_name, hash_name='Type', read_throughput=2, write_throughp
             }
         )
     except: 
-        table = dynamodb_r.Table(table_name) 
+        table = dynamodb_r.Table(table_name) # If the table already exists, return the table
 
     return table
 
 
 def get_table(table_name):
-    dynamodb_r, dynamodb_c = get_boto3_dynamodb()
     return dynamodb_r.Table(table_name) 
 
 

@@ -269,7 +269,7 @@ if __name__=="__main__":
         #{'uri': 'site3/config/', 'method': 'PUT', 'payload': sample_config3},
         #{'uri': 'site4/config/', 'method': 'PUT', 'payload': sample_config4},
         #{'uri': 'site5/config/', 'method': 'PUT', 'payload': sample_config5},
-        {'uri': 'site4/config/', 'method': 'PUT', 'payload': simple_config},
+        #{'uri': 'site4/config/', 'method': 'PUT', 'payload': simple_config},
 
         #{'uri': 'site1/status/', 'method': 'PUT', 'payload': site_status},
         #{'uri': 'site1/weather/', 'method': 'PUT', 'payload': weather_status},
@@ -278,10 +278,10 @@ if __name__=="__main__":
 
         #{'uri': 'site1/status/', 'method': 'GET', 'payload': None},
         #{'uri': 'site1/weather/', 'method': 'GET', 'payload': None},
-        #{'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
+        {'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
         #{'uri': 'site1/config/', 'method': 'GET', 'payload': None},
         #{'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
-        {'uri': 'all/config/', 'method': 'GET', 'payload':None},
+        #{'uri': 'all/config/', 'method': 'GET', 'payload':None},
     ]
 
     responses = {}

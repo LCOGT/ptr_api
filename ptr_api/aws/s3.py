@@ -62,7 +62,7 @@ def get_presigned_post_url(bucket_name, object_name):
             Bucket=bucket_name,
             Key=object_name,
             ExpiresIn=URL_EXPIRATION 
-            )
+        )
     except ClientError as e:
         print(e)
         return {'error': e}
