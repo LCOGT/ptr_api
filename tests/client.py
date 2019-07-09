@@ -118,7 +118,8 @@ if __name__=="__main__":
         #{'uri': 'site1/weather/', 'method': 'GET', 'payload': None},
         #{'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
         #{'uri': 'site1/config/', 'method': 'GET', 'payload': None},
-        {'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
+        #{'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
+        {'uri': 'site1/download/', 'method': 'POST', 'payload': sample_upload_request}
         #{'uri': 'all/config/', 'method': 'GET', 'payload':None},
     ]
 
@@ -135,6 +136,6 @@ if __name__=="__main__":
     
             
     # Print all the responses from each endpoint in formatted json. 
-    #print(json.dumps(responses, indent=2))
+    print(json.dumps(responses, indent=2))
     print("Completed all api calls.")
 
