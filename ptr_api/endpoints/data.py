@@ -2,7 +2,7 @@ from flask import request, jsonify
 import json, os
 from ptr_api.aws import s3
 
-BUCKET_NAME = str(os.environ.get('BUCKET_NAME'))
+BUCKET_NAME = "photonranch-001"
 
 def upload(site):
     content = json.loads(request.get_data())
