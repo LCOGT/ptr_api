@@ -274,13 +274,13 @@ if __name__=="__main__":
         #{'uri': 'site1/status/', 'method': 'PUT', 'payload': site_status},
         #{'uri': 'site1/weather/', 'method': 'PUT', 'payload': weather_status},
 
-        {'uri': 'site1/mount1/command/', 'method': 'POST', 'payload': goto_cmd},
+        #{'uri': 'site1/mount1/command/', 'method': 'POST', 'payload': goto_cmd},
 
         #{'uri': 'site1/status/', 'method': 'GET', 'payload': None},
         #{'uri': 'site1/weather/', 'method': 'GET', 'payload': None},
-        {'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
+        #{'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
         #{'uri': 'site1/config/', 'method': 'GET', 'payload': None},
-        #{'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
+        {'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
         #{'uri': 'all/config/', 'method': 'GET', 'payload':None},
     ]
 
