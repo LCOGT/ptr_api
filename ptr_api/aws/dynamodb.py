@@ -12,13 +12,6 @@ REGION = 'us-east-1'
 dynamodb_r = boto3.resource('dynamodb', 'us-east-1')
 dynamodb_c = boto3.client('dynamodb', 'us-east-1')
 
-#def get_boto3_dynamodb():
-#    dynamodb_r = boto3.resource('dynamodb', 'us-east-1')
-#    dynamodb_c = boto3.client('dynamodb', 'us-east-1')
-#    
-#    return dynamodb_r, dynamodb_c
-
-
 def create_table(table_name, hash_name='Type', read_throughput=2, write_throughput=2):
     try:
         table = dynamodb_r.create_table(
