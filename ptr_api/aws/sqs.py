@@ -1,11 +1,12 @@
 # aws/sqs.py
 
 import boto3
+import os
 
 REGION = 'us-east-1'
 
-sqs_r = boto3.resource('sqs', REGION)
-sqs_c = boto3.client('sqs', REGION)
+#sqs_r = boto3.resource('sqs', REGION)
+#sqs_c = boto3.client('sqs', REGION)
 
 def create_queue(queue_name):
     queue_attributes = {
@@ -33,7 +34,6 @@ def get_queue_item(queue_name):
     If successful, return the message body and delete the entry in sqs.
     If unsuccessful (ie. queue is empty), return False.
     """
-
     queue = sqs_r.get_queue_by_name(QueueName=queue_name)
     queue_url = queue.url
 

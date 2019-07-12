@@ -10,6 +10,7 @@ from warrant import Cognito
 from dotenv import load_dotenv
 from os.path import join, dirname
 from sample_message_bodies import *
+import tkinter as tk
 
 
 class Client:
@@ -95,47 +96,66 @@ class Client:
 if __name__=="__main__":
     c = Client()
 
-    ### Test all endpoints ###
-
-    def load_bodies(filename):
-        return json.loads(read_text('test.fixtures', filename))
-
-    # Each item is one request
+    # Test all Endpoints: Each item is one request
     endpoints = [
-        #{'uri': 'site1/config/', 'method': 'PUT', 'payload': sample_config},
-        #{'uri': 'site2/config/', 'method': 'PUT', 'payload': sample_config2},
-        #{'uri': 'site3/config/', 'method': 'PUT', 'payload': sample_config3},
-        #{'uri': 'site4/config/', 'method': 'PUT', 'payload': sample_config4},
-        #{'uri': 'site5/config/', 'method': 'PUT', 'payload': sample_config5},
-        #{'uri': 'site4/config/', 'method': 'PUT', 'payload': simple_config},
+        {'uri': 'site1/config/', 'method': 'PUT', 'payload': sample_config},
+        {'uri': 'site2/config/', 'method': 'PUT', 'payload': sample_config2},
+        {'uri': 'site3/config/', 'method': 'PUT', 'payload': sample_config3},
+        {'uri': 'site4/config/', 'method': 'PUT', 'payload': sample_config4},
+        {'uri': 'site5/config/', 'method': 'PUT', 'payload': sample_config5},
+        {'uri': 'site4/config/', 'method': 'PUT', 'payload': simple_config},
 
-        #{'uri': 'site1/status/', 'method': 'PUT', 'payload': site_status},
-        #{'uri': 'site1/weather/', 'method': 'PUT', 'payload': weather_status},
+        {'uri': 'site1/status/', 'method': 'PUT', 'payload': site_status},
+        {'uri': 'site1/weather/', 'method': 'PUT', 'payload': weather_status},
 
-        #{'uri': 'site1/mount1/command/', 'method': 'POST', 'payload': goto_cmd},
+        {'uri': 'site1/mount1/command/', 'method': 'POST', 'payload': goto_cmd},
 
-        #{'uri': 'site1/status/', 'method': 'GET', 'payload': None},
-        #{'uri': 'site1/weather/', 'method': 'GET', 'payload': None},
-        #{'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
-        #{'uri': 'site1/config/', 'method': 'GET', 'payload': None},
-        #{'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
-        {'uri': 'site1/download/', 'method': 'POST', 'payload': sample_upload_request}
-        #{'uri': 'all/config/', 'method': 'GET', 'payload':None},
+        {'uri': 'site1/status/', 'method': 'GET', 'payload': None},
+        {'uri': 'site1/weather/', 'method': 'GET', 'payload': None},
+        {'uri': 'site1/mount1/command/', 'method': 'GET', 'payload': None},
+        {'uri': 'site1/config/', 'method': 'GET', 'payload': None},
+        {'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
+        {'uri': 'site1/download/', 'method': 'POST', 'payload': sample_upload_request},
+        {'uri': 'all/config/', 'method': 'GET', 'payload':None}
     ]
 
-    responses = {}
-    for e in endpoints:
-        method = e['method']
-        if method == 'GET':
-            res = c.get(e['uri'], e['payload'])
-        if method == 'POST':
-            res = c.post(e['uri'], e['payload'])
-        if method == 'PUT': 
-            res = c.put(e['uri'], e['payload'])
-        responses[f"{e['uri']}:{e['method']}"] = res
+    # Create GUI for choosing endpoints to testing
+    win = tk.Tk()
+    win.title("PTR-API: Endpoint Tester")
+    endpoint_vars = []
+
+    def close_window(): 
+        win.destroy()
     
-            
-    # Print all the responses from each endpoint in formatted json. 
-    print(json.dumps(responses, indent=2))
+    test_all_endpoints = tk.IntVar()
+    tk.Checkbutton(win, text='Test All Endpoints', variable=test_all_endpoints).grid(row=1, sticky=tk.W)
+    for e in range(len(endpoints)):
+        endpoint_vars.append(tk.IntVar())
+        endpoint_name = endpoints[e]['uri']+'\n'+'METHOD: '+endpoints[e]['method']
+        tk.Checkbutton(win, text=endpoint_name, variable=endpoint_vars[e]).grid(row=e+2, sticky=tk.W)
+    tk.Button(win, text='TEST', command=win.quit).grid(row=len(endpoints)+2, sticky=tk.W, pady=4)
+
+    win.mainloop()
+    
+    # Test selected endpoints
+    print('\n')
+    print('TESTING ENDPOINTS:') # If endpoint was checked for testing, send request and print response
+    print('********************************************************************************')
+    responses = {}
+    res = 'No responses'
+    for i in range(len(endpoints)):
+        if endpoint_vars[i].get()==1:
+            e = endpoints[i]
+            method = e['method']
+            if method == 'GET':
+                res = c.get(e['uri'], e['payload'])
+            if method == 'POST':
+                res = c.post(e['uri'], e['payload'])
+            if method == 'PUT': 
+                res = c.put(e['uri'], e['payload'])
+            print('RESPONSE FROM: '+e['uri']+' USING HTTP METHOD: '+e['method'])
+            print(json.dumps(res, indent=2)+'\n')
+    print('********************************************************************************')
     print("Completed all api calls.")
+    print('\n')
 
