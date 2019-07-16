@@ -1,6 +1,7 @@
+from ptr_api.aws import s3
 from flask import request, jsonify
 import json, os
-from ptr_api.aws import s3
+
 
 BUCKET_NAME = "photonranch-001"
 

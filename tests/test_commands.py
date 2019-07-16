@@ -20,6 +20,7 @@ def test_get_command_missing_queue(mock_get_queue_item):
 
     assert content == expected_content
 
+
 @mock.patch('ptr_api.endpoints.commands.request')
 @mock.patch('ptr_api.aws.sqs.send_to_queue')
 def test_post_command(mock_send_to_queue, mock_request):
