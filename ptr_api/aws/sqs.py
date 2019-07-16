@@ -5,8 +5,8 @@ import os
 
 REGION = 'us-east-1'
 
-#sqs_r = boto3.resource('sqs', REGION)
-#sqs_c = boto3.client('sqs', REGION)
+sqs_r = boto3.resource('sqs', REGION)
+sqs_c = boto3.client('sqs', REGION)
 
 def create_queue(queue_name):
     queue_attributes = {
