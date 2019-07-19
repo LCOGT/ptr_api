@@ -8,6 +8,7 @@ URL_EXPIRATION = 3600 # Seconds until URL expiration
 
 s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 
+
 # docs: https://bit.ly/2Hqz7Bd
 def get_presigned_url(bucket_name, object_name):
     """

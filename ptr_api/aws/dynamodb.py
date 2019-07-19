@@ -4,6 +4,7 @@ import boto3, time, os, json
 from dotenv import load_dotenv
 from os.path import join, dirname
 
+
 # Determine if we will run a local aws serice for testing.
 LOCAL_AWS = 0
 REGION = 'us-east-1'
@@ -75,6 +76,3 @@ def scan(table_name):
     for entry in response['Items']: 
         items[entry['site']] = entry['configuration']
     return items
-
-
-

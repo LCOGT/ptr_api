@@ -34,6 +34,7 @@ def get_queue_item(queue_name):
     If successful, return the message body and delete the entry in sqs.
     If unsuccessful (ie. queue is empty), return False.
     """
+
     queue = sqs_r.get_queue_by_name(QueueName=queue_name)
     queue_url = queue.url
 
@@ -64,6 +65,7 @@ def send_to_queue(queue_name, messageBody="empty body"):
     Args:
         messagebody (str): body of the message to send.
     """
+    
     queue = sqs_r.get_queue_by_name(QueueName=queue_name)
     queue_url = queue.url
 

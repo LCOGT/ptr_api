@@ -66,5 +66,6 @@ def init_from_config(site, config=None):
     image_dynamodb_name = f"{site}_images"
     dynamodb.create_table(image_dynamodb_name)
 
+    
 def get_all_config():
     return dynamodb.scan('site_configurations')

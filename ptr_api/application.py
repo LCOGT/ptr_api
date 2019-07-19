@@ -94,7 +94,7 @@ class Weather(Resource):
         Get the latest weather at a site.
         '''
         return status.get_weather(site)
-
+      
     @ptr_api.auth.required
     def put(self, site):
         '''
@@ -174,6 +174,16 @@ class Download(Resource):
         '''
         return data.download(site)
 
+
+class LatestImage(Resource):
+
+    def get(self, site):
+        return data.get_k_recent_images(site, 1)
+
+class LatestKImages(Resource):
+    def get(self, site, k):
+        return data.get_k_recent_images(site, k)
+
 #-----------------------------------------------------------------------------#
 
 # Site Configurations
@@ -215,6 +225,8 @@ api.add_resource(Weather,'/<string:site>/weather/')
 api.add_resource(Command,'/<string:site>/<string:mount>/command/')
 api.add_resource(Upload,'/<string:site>/upload/')
 api.add_resource(Download,'/<string:site>/download/')
+api.add_resource(LatestImage, '/<string:site>/latest_image/')
+api.add_resource(LatestKImages, '/<string:site>/latest_images/<int:k>/')
 api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
 
