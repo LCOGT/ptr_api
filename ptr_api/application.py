@@ -29,10 +29,10 @@
 
 #-----------------------------------------------------------------------------#
 
-from endpoints import status, commands, data, sites
+from ptr_api.endpoints import status, commands, data, sites
 from flask import Flask, request, jsonify
 import json, boto3, time
-import auth
+import ptr_api.auth
 from flask_restplus import Api, Resource, fields
 from flask_cors import CORS
 
@@ -76,7 +76,7 @@ class Status(Resource):
         '''
         return status.get_status(site)
 
-    @auth.required
+    @ptr_api.auth.required
     @api.expect(model, envelope='resource')
     def put(self, site):
         ''' 
@@ -94,8 +94,8 @@ class Weather(Resource):
         Get the latest weather at a site.
         '''
         return status.get_weather(site)
-
-    @auth.required
+      
+    @ptr_api.auth.required
     def put(self, site):
         '''
         Update a site's current weather. Requires observatory credentials.
@@ -107,14 +107,14 @@ class Weather(Resource):
 # Command Queue
 class Command(Resource):
 
-    @auth.required
+    @ptr_api.auth.required
     def get(self, site, mount):
         '''
         Get the oldest queued command to execute. Authorization required.
         '''
         return commands.get_command(site, mount)
 
-    @auth.required
+    @ptr_api.auth.required
     #@api.expect(model)
     def post(self, site, mount):
         '''
@@ -134,7 +134,7 @@ class Command(Resource):
 # Uploads to S3
 class Upload(Resource):
 
-    @auth.required
+    @ptr_api.auth.required
     def get(self, site):
         ''' 
         A request for a presigned post url, which requires the name of the object
@@ -174,6 +174,7 @@ class Download(Resource):
         '''
         return data.download(site)
 
+
 class LatestImage(Resource):
 
     def get(self, site):
@@ -194,7 +195,7 @@ class Config(Resource):
         '''
         return sites.get_config(site)
 
-    @auth.required
+    @ptr_api.auth.required
     def put(self, site):
         ''' 
         Set the configuration for a site.

@@ -8,10 +8,6 @@ from dotenv import load_dotenv
 import os
 from os.path import join, dirname
 
-# Determine if we will run a local aws serice for testing
-dotenv_path_awsconfig = join(dirname(__file__),'aws/.aws_config')
-load_dotenv(dotenv_path_awsconfig)
-LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
 
 # AWS cognito account info imported from .env
 dotenv_path_authenv = join(dirname(__file__),'.auth_env')
@@ -24,22 +20,20 @@ APP_CLIENT_SECRET = os.environ.get('auth_APP_CLIENT_SECRET')
 # Object (from warrant module) used to verify access tokens. 
 cognito_helper = Cognito(USERPOOL_ID, APP_CLIENT_ID, 
                          client_secret=APP_CLIENT_SECRET, 
-                         user_pool_region=REGION )
+                         user_pool_region=REGION)
+
 
 # This decorator only returns the decorated function if it has a valid 
 # access token. Otherwise, it will return a 401 UNAUTHORIZED response..
 def required(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
-        # Don't require auth if we're using a local aws mock.
-        if LOCAL_AWS: 
-            return f(*args, **kwargs)
         headers = request.headers
         try:
             auth_header = headers['Authorization'] 
             access_token = auth_header.split()[-1]
             cognito_helper.verify_token(access_token, 'access_token', 'access')
-            
+
             #groups = cognito_helper.client.admin_get_list_groups_for_user(Username=)
             return f(*args, **kwargs)
         # In case there's no authorization header.
