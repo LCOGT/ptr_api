@@ -70,8 +70,6 @@ def send_to_queue(queue_name, messageBody="empty body"):
     # All messages with this group id will maintain FIFO ordering.
     messageGroupId = 'primary_message_group_id'
 
-    print(f'message body (from sqs module): {messageBody}')
-
     response = sqs_c.send_message(
         QueueUrl=queue_url,
         MessageBody=messageBody,

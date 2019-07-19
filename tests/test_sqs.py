@@ -1,13 +1,15 @@
 import pytest
 import boto3
-import os
+import os, random
 from ptr_api.aws import sqs
 
 @pytest.fixture
 def sqs_mocker(scope='session', autouse=True):
     sqs_r_mock = boto3.resource('sqs', region_name='us-east-1', endpoint_url=f'http://localhost:5002')
     sqs_c_mock = boto3.client('sqs', region_name='us-east-1', endpoint_url=f'http://localhost:5002')
-    queue_name = 'test_queue13'
+
+    queue_name = f"{random.randint(0,1000)}_tablename"
+
     queue_url = sqs_c_mock.create_queue(
         QueueName=queue_name
     )['QueueUrl']

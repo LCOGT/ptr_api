@@ -1,37 +1,70 @@
 import pytest
 import boto3
-import os
+import os, random
 from ptr_api.aws import dynamodb
 
-# @pytest.fixture
-# def sqs_mocker(scope='session', autouse=True):
+@pytest.fixture
+def dynamodb_mocker(scope='session', autouse=True):
+    dynamodb_r_mock = boto3.resource('dynamodb', region_name='us-east-1', endpoint_url=f'http://localhost:5003')
+    dynamodb_c_mock = boto3.client('dynamodb', region_name='us-east-1', endpoint_url=f'http://localhost:5003')
+    
+    table_name = f"{random.randint(0,100000)}_tablename"
 
-#     dynamodb_r_mock = boto3.resource('dynamodb', region_name='us-east-1', endpoint_url=f'http://localhost:5003')
-#     dynamodb_c_mock = boto3.client('dynamodb', region_name='us-east-1', endpoint_url=f'http://localhost:5003')
+    table = dynamodb_r_mock.create_table(
+        TableName=table_name,
+        KeySchema=[
+            {
+                'AttributeName': 'Test_Attribute',
+                'KeyType': 'HASH'
+            },
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'Type',
+                'AttributeType': 'S'
+            },
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 2,
+            'WriteCapacityUnits': 2
+        }
+    )
 
-#     table_name = 'test_table'
+    yield (dynamodb_r_mock, dynamodb_c_mock, table, table_name)
 
-#     queue_url = dynamodb_c_mock.create_table(
-#         QueueName=queue_name
-#     )['QueueUrl']
+def test_create_table(dynamodb_mocker):
+    dynamodb_r_mock, dynamodb_c_mock, table, table_name = dynamodb_mocker
 
-#     yield (sqs_r_mock, sqs_c_mock, queue_url, queue_name)
+    test_table_name = f"{random.randint(0,100000)}_test_tablename"
 
-# def test_create_table():
-#     table_name = 'test_jackie'
-#     table = dynamodb.create_table(table_name)
+    dynamodb.dynamodb_r = dynamodb_r_mock
+    dynamodb.dynamodb_c = dynamodb_c_mock
+    try:
+        test_table = dynamodb.create_table(test_table_name)
+    except:
+        test_table = None
 
-#     assert True
+    assert test_table != None 
 
-#def test_get_table():
-#    return
+def test_insert_item(dynamodb_mocker):
+    dynamodb_r_mock, dynamodb_c_mock, table, table_name = dynamodb_mocker
 
-#def test_insert_item():
-#    return
+    test_item = {"Test_Attribute": "test"}
 
-#def test_get_item():
-#    return
+    dynamodb.dynamodb_r = dynamodb_r_mock
+    dynamodb.dynamodb_c = dynamodb_c_mock
+    result = dynamodb.insert_item(table_name, test_item)
 
-#def test_scan():
-#    return
+    assert result
+
+def test_get_item(dynamodb_mocker):
+    dynamodb_r_mock, dynamodb_c_mock, table, table_name = dynamodb_mocker
+
+    test_item = {"Test_Attribute": "test"}
+    table.put_item(Item=test_item)
+
+    dynamodb.dynamodb_r = dynamodb_r_mock
+    dynamodb.dynamodb_c = dynamodb_c_mock
+    item = dynamodb.get_item(table_name, test_item)
+    assert item == test_item
 
