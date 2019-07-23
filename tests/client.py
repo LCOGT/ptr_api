@@ -116,7 +116,9 @@ if __name__=="__main__":
         {'uri': 'site1/config/', 'method': 'GET', 'payload': None},
         {'uri': 'site1/upload/', 'method': 'GET', 'payload': sample_upload_request},
         {'uri': 'site1/download/', 'method': 'POST', 'payload': sample_upload_request},
-        {'uri': 'all/config/', 'method': 'GET', 'payload':None}
+        {'uri': 'all/config/', 'method': 'GET', 'payload':None},
+        {'uri': 'WMD/latest_images/3/', 'method': 'GET', 'payload':None},
+        {'uri': 'WMD/text_files/', 'method': 'GET', 'payload':None}
     ]
 
     # Create GUI for choosing endpoints to testing
@@ -147,14 +149,17 @@ if __name__=="__main__":
         if endpoint_vars[i].get()==1:
             e = endpoints[i]
             method = e['method']
-            if method == 'GET':
-                res = c.get(e['uri'], e['payload'])
-            if method == 'POST':
-                res = c.post(e['uri'], e['payload'])
-            if method == 'PUT': 
-                res = c.put(e['uri'], e['payload'])
-            print('RESPONSE FROM: '+e['uri']+' USING HTTP METHOD: '+e['method'])
-            print(json.dumps(res, indent=2)+'\n')
+            try:
+                if method == 'GET':
+                    res = c.get(e['uri'], e['payload'])
+                if method == 'POST':
+                    res = c.post(e['uri'], e['payload'])
+                if method == 'PUT': 
+                    res = c.put(e['uri'], e['payload'])
+                print('RESPONSE FROM: '+e['uri']+' USING HTTP METHOD: '+e['method'])
+                print(json.dumps(res, indent=2)+'\n')
+            except:
+                print('ERROR: No response from this endpoint')
     print('********************************************************************************')
     print("Completed all api calls.")
     print('\n')

@@ -217,6 +217,10 @@ class AllConfig(Resource):
         return sites.get_all_config()
         
 #-----------------------------------------------------------------------------#
+class TextFiles(Resource):
+
+    def get(self, site):
+        return data.get_text_files(site)
 
 # Add resources to the API and define their routes
 api.add_resource(Home, '/')
@@ -227,6 +231,7 @@ api.add_resource(Upload,'/<string:site>/upload/')
 api.add_resource(Download,'/<string:site>/download/')
 api.add_resource(LatestImage, '/<string:site>/latest_image/')
 api.add_resource(LatestKImages, '/<string:site>/latest_images/<int:k>/')
+api.add_resource(TextFiles,'/<string:site>/text_files/')
 api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
 
