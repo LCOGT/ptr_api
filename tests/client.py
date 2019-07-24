@@ -118,7 +118,6 @@ if __name__=="__main__":
         {'uri': 'site1/download/', 'method': 'POST', 'payload': sample_upload_request},
         {'uri': 'all/config/', 'method': 'GET', 'payload':None},
         {'uri': 'WMD/latest_images/3/', 'method': 'GET', 'payload':None},
-        {'uri': 'WMD/text_files/', 'method': 'GET', 'payload':None}
     ]
 
     # Create GUI for choosing endpoints to testing

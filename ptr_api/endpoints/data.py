@@ -79,18 +79,6 @@ def get_k_recent_images(site, k=1):
         latest_k_jpgs.append(jpg_properties)
 
     return json.dumps(latest_k_jpgs)
-        
-def get_text_files(site):
-    files = []
-
-    # Get all text files in S3
-    for key in get_matching_s3_objects(bucket=BUCKET_NAME, prefix=site, suffix='.txt'):
-        path = key['Key']
-        url = s3.get_presigned_url(BUCKET_NAME, path)
-        files.append(url)
-        print(url)
-
-    return json.dumps(files)
 
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
