@@ -6,7 +6,7 @@
 
 from flask import request, jsonify
 import json, time, boto3
-from aws import dynamodb
+from ptr_api.aws import dynamodb
 
 
 def get_status(site):

@@ -46,7 +46,17 @@ Instantiate and populate a file titled '.auth_env' within the main ptr-flask-api
 ~ auth_APP_CLIENT_SECRET = app client secret
 ```
 
-##### Create .client_env
+### Deploying the API
+It should be possible to now host the API locally from any workspace by using the command:
+```bash
+(venv)$ flask run
+```
+<br/>
+
+
+## Testing the API
+
+### Create .client_env
 Enter the directory labeled 'tests' in order to access the testing client application:
 ```bash
 (venv)$ cd tests
@@ -62,10 +72,25 @@ Instantiate and populate a file titled '.client_env' within the tests directory.
 ~ client_PASS = client password
 ```
 
-### Deploy and test the API
-It should be possible to now host the API locally from any workspace by using the command:
+### Unit tests
+To run the unit tests, begin by going into the tests directory and start the mock AWS servers
+```bash
+(venv)$ python start_local.py
+```
+
+in a separate terminal, then run
+```bash
+(venv)$ pytest
+```  
+
+### Testing the endpoints
+You can test the endpoints using the test client. This will test the local version of the API.
+Make sure that you have the app running before you use the test client
 ```bash
 (venv)$ flask run
 ```
-
-In a seperate terminal, you can test the API by running the client.py script.
+Then go into the tests directory and run the test client
+```bash
+(venv)$ python client.py
+```
+An interface should appear allowing you to select the endpoints that you want to test (the "Test all endpoints" checkbox is currently not working).

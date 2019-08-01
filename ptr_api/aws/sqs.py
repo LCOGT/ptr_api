@@ -1,64 +1,28 @@
 # aws/sqs.py
 
 import boto3
-import sys,time,random,json, subprocess, os
-from moto import mock_sqs
-from dotenv import load_dotenv
-from os.path import join, dirname
+import os
 
-# Determine if we will run a local aws serice for testing.
-load_dotenv('aws/.aws_config')
-LOCAL_AWS = bool(int(os.environ.get('LOCAL_AWS')))
-SQS_PORT = int(os.environ.get('SQS_PORT'))
-REGION = str(os.environ.get('REGION'))
+REGION = 'us-east-1'
 
-
-def get_boto3_sqs():
-    # If we want a local mock queue:
-    if LOCAL_AWS:
-        sqs_r = boto3.resource('sqs', region_name=REGION, endpoint_url=f'http://localhost:{SQS_PORT}')
-        sqs_c = boto3.client('sqs', region_name=REGION, endpoint_url=f'http://localhost:{SQS_PORT}')
-    # If we want a real sqs instance: 
-    else: 
-        sqs_r = boto3.resource('sqs', REGION)
-        sqs_c = boto3.client('sqs', REGION)
-    return sqs_r, sqs_c
-
-def get_queue(queue_name):
-
-    queue_attributes = {
-        'FifoQueue': 'true',
-        'DelaySeconds': '0',
-        'MessageRetentionPeriod': '900', # 15 minutes to complete a command, else deleted.
-        'ContentBasedDeduplication': 'true'
-    }
-
-    sqs_r, sqs_c = get_boto3_sqs()
-
-    queue = sqs_r.get_queue_by_name(QueueName=queue_name)
-
-    return queue.url, sqs_r, sqs_c
+sqs_r = boto3.resource('sqs', REGION)
+sqs_c = boto3.client('sqs', REGION)
 
 def create_queue(queue_name):
-
     queue_attributes = {
         'FifoQueue': 'true',
         'DelaySeconds': '0',
         'MessageRetentionPeriod': '900', # 15 minutes to complete a command, else deleted.
         'ContentBasedDeduplication': 'true'
     }
-
-    sqs_r, sqs_c = get_boto3_sqs()
 
     try: 
         queue = sqs_r.get_queue_by_name(QueueName=queue_name)
     except:
         queue = sqs_r.create_queue(QueueName=queue_name, Attributes=queue_attributes)
-
-    return queue.url, sqs_r, sqs_c
+        
 
 def list_all_queues(queue_name_prefix=''):
-    sqs_r, sqs_c = get_boto3_sqs()
     all_queues = sqs_c.list_queues(QueueNamePrefix=queue_name_prefix)    
     print(all_queues['QueueUrls'])
     print(type(all_queues))
@@ -71,7 +35,8 @@ def get_queue_item(queue_name):
     If unsuccessful (ie. queue is empty), return False.
     """
 
-    queue_url, sqs_r, sqs_c = get_queue(queue_name)
+    queue = sqs_r.get_queue_by_name(QueueName=queue_name)
+    queue_url = queue.url
 
     response = sqs_c.receive_message(
         QueueUrl=queue_url,
@@ -93,19 +58,19 @@ def get_queue_item(queue_name):
         print(e)
         return False
 
+
 def send_to_queue(queue_name, messageBody="empty body"):
     """
     Send a message to the 'toAWS' queue.
     Args:
         messagebody (str): body of the message to send.
     """
-
-    queue_url, sqs_r, sqs_c = get_queue(queue_name)
+    
+    queue = sqs_r.get_queue_by_name(QueueName=queue_name)
+    queue_url = queue.url
 
     # All messages with this group id will maintain FIFO ordering.
     messageGroupId = 'primary_message_group_id'
-
-    print(f'message body (from sqs module): {messageBody}')
 
     response = sqs_c.send_message(
         QueueUrl=queue_url,

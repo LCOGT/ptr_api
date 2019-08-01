@@ -1,41 +1,26 @@
+from ptr_api.aws import s3, dynamodb, rds
+from ptr_api import config_init
 from flask import request, jsonify
 import json, os
-from aws import s3, dynamodb
+import psycopg2
 
-BUCKET_NAME = str(os.environ.get('BUCKET_NAME'))
+
+BUCKET_NAME = "photonranch-001"
 
 def upload(site):
-    """ 
-    A request for a presigned post url requires the name of the object
-    and the path at which it is stored. This is sent in a single string under
-    the key 'object_name' in the json-string body of the request.
-
-    Example request body:
-    '{"object_name":"raw_data/2019/a_file.txt"}'
-
-    This request will save an image into the main s3 bucket as:
-    MAIN_BUCKET_NAME/site/raw_data/2019/img001.fits
-
-    * * *
-
-    Here's how another Python program can use the presigned URL to upload a file:
-
-    with open(object_name, 'rb') as f:
-        files = {'file': (object_name, f)}
-        http_response = requests.post(response['url'], data=response['fields'], files=files)
-    # If successful, returns HTTP status code 204
-    logging.info(f'File upload HTTP status code: {http_response.status_code}')
-
-    """
     content = json.loads(request.get_data())
     object_name = f"{site}/{content['object_name']}"
-    return s3.get_presigned_post_url(BUCKET_NAME, object_name)
+    response = s3.get_presigned_post_url(BUCKET_NAME, object_name)
+    return jsonify(response)
+
 
 def download(site):
     content = json.loads(request.get_data())
     object_name = f"{site}/{content['object_name']}"
-    return s3.get_presigned_url(BUCKET_NAME, object_name)
+    url = s3.get_presigned_url(BUCKET_NAME, object_name)
+    return url
 
+  
 def get_recent_image(site):
     table_name = f"{site}_images"
     table = dynamodb.get_table(table_name)
@@ -96,7 +81,7 @@ def get_k_recent_images(site, k=1):
         latest_k_jpgs.append(jpg_properties)
 
     return json.dumps(latest_k_jpgs)
-        
+
 
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
@@ -163,3 +148,42 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
     """
     for obj in get_matching_s3_objects(bucket, prefix, suffix):
         yield obj['Key']
+
+
+def get_k_recent_images2(site, k=1):
+    ''' Get the k most recent jpgs in a site's s3 directory.
+    '''
+    connection = None
+    try:
+        params = config_init.config()
+        db_params = params['postgresql']
+        connection = psycopg2.connect(**db_params)
+        cursor = connection.cursor()
+
+        # List of k last modified files returned from ptr archive query
+        latest_k_files = rds.get_last_modified(cursor, connection, k)
+        latest_k_jpgs = []
+        for i in range(len(latest_k_files)):
+            root = latest_k_files[i]
+            
+            # TODO: Change the path string to be read from database
+            path = "%s/raw_data/2019/%s-E13.jpg" % (site,root)
+            filename = "%s-E13.jpg" % root
+
+            url = s3.get_presigned_url(BUCKET_NAME, path)
+            jpg_properties = {
+                "recency_order": i,
+                "url": url,
+                "filename": filename,
+                "last_modified": "I AM A DATE"
+            }
+            latest_k_jpgs.append(jpg_properties)
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if connection is not None:
+            connection.close()
+            print('Connection closed')
+
+    return json.dumps(latest_k_jpgs)
