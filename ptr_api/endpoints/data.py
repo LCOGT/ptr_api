@@ -1,6 +1,8 @@
-from ptr_api.aws import s3, dynamodb
+from ptr_api.aws import s3, dynamodb, rds
+from ptr_api import config_init
 from flask import request, jsonify
 import json, os
+import psycopg2
 
 
 BUCKET_NAME = "photonranch-001"
@@ -145,3 +147,41 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
     """
     for obj in get_matching_s3_objects(bucket, prefix, suffix):
         yield obj['Key']
+
+def get_k_recent_images2(site, k=1):
+    ''' Get the k most recent jpgs in a site's s3 directory.
+    '''
+    connection = None
+    try:
+        params = config_init.config()
+        db_params = params['postgresql']
+        connection = psycopg2.connect(**db_params)
+        cursor = connection.cursor()
+
+        # List of k last modified files returned from ptr archive query
+        latest_k_files = rds.get_last_modified(cursor, connection, k)
+        latest_k_jpgs = []
+        for i in range(len(latest_k_files)):
+            root = latest_k_files[i]
+            
+            # TODO: Change the path string to be read from database
+            path = "%s/raw_data/2019/%s-E13.jpg" % (site,root)
+            filename = "%s-E13.jpg" % root
+
+            url = s3.get_presigned_url(BUCKET_NAME, path)
+            jpg_properties = {
+                "recency_order": i,
+                "url": url,
+                "filename": filename,
+                "last_modified": "I AM A DATE"
+            }
+            latest_k_jpgs.append(jpg_properties)
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if connection is not None:
+            connection.close()
+            print('Connection closed')
+
+    return json.dumps(latest_k_jpgs)

@@ -176,13 +176,16 @@ class Download(Resource):
 
 
 class LatestImage(Resource):
-
+    '''
+    NOTE: New function that queries database is called 'get_k_recent_images2'
+          To go back to the original method, remove 2 from the end of the function name
+    '''
     def get(self, site):
-        return data.get_k_recent_images(site, 1)
+        return data.get_k_recent_images2(site, 1)
 
 class LatestKImages(Resource):
     def get(self, site, k):
-        return data.get_k_recent_images(site, k)
+        return data.get_k_recent_images2(site, k)
 
 #-----------------------------------------------------------------------------#
 
