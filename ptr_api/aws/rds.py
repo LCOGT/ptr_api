@@ -17,3 +17,4 @@ def get_last_modified(cursor, connection, k):
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
     return images
+  

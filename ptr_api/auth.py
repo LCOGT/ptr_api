@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 import os
 from os.path import join, dirname
 
-
 # AWS cognito account info imported from .env
 dotenv_path_authenv = join(dirname(__file__),'.auth_env')
 load_dotenv(dotenv_path_authenv)
@@ -22,7 +21,6 @@ cognito_helper = Cognito(USERPOOL_ID, APP_CLIENT_ID,
                          client_secret=APP_CLIENT_SECRET, 
                          user_pool_region=REGION)
 
-
 # This decorator only returns the decorated function if it has a valid 
 # access token. Otherwise, it will return a 401 UNAUTHORIZED response..
 def required(f):
@@ -33,7 +31,7 @@ def required(f):
             auth_header = headers['Authorization'] 
             access_token = auth_header.split()[-1]
             cognito_helper.verify_token(access_token, 'access_token', 'access')
-
+            
             #groups = cognito_helper.client.admin_get_list_groups_for_user(Username=)
             return f(*args, **kwargs)
         # In case there's no authorization header.

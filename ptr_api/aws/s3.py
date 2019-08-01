@@ -16,12 +16,10 @@ def get_presigned_url(bucket_name, object_name):
 
     Files are saved to the provided site folder.
     """
-
     params = {
         'Bucket': bucket_name,
         'Key': object_name, # Key = folder path + filename
     }
-
     try:
         url = s3_c.generate_presigned_url(
             ClientMethod='get_object', 
@@ -47,7 +45,7 @@ def get_presigned_post_url(bucket_name, object_name):
     MAIN_BUCKET_NAME/site/raw_data/2019/img001.fits
     
     * * *
-
+    
     Here's how another Python program can use the presigned URL to upload a file:
 
     with open(object_name, 'rb') as f:

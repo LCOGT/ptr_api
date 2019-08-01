@@ -20,7 +20,7 @@ def download(site):
     url = s3.get_presigned_url(BUCKET_NAME, object_name)
     return url
 
-
+  
 def get_recent_image(site):
     table_name = f"{site}_images"
     table = dynamodb.get_table(table_name)
@@ -81,6 +81,7 @@ def get_k_recent_images(site, k=1):
         latest_k_jpgs.append(jpg_properties)
 
     return json.dumps(latest_k_jpgs)
+
 
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
@@ -147,6 +148,7 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
     """
     for obj in get_matching_s3_objects(bucket, prefix, suffix):
         yield obj['Key']
+
 
 def get_k_recent_images2(site, k=1):
     ''' Get the k most recent jpgs in a site's s3 directory.

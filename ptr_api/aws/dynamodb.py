@@ -39,6 +39,7 @@ def create_table(table_name, hash_name='Type', read_throughput=2, write_throughp
             table = dynamodb_r.Table(table_name)
         except:
             print('There was an error creating the table ' + table_name)
+
     return table
 
 

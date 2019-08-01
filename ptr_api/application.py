@@ -94,7 +94,7 @@ class Weather(Resource):
         Get the latest weather at a site.
         '''
         return status.get_weather(site)
-      
+
     @ptr_api.auth.required
     def put(self, site):
         '''
@@ -173,7 +173,6 @@ class Download(Resource):
         The path is specified as a url parameter.
         '''
         return data.download(site)
-
 
 class LatestImage(Resource):
     '''

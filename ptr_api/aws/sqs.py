@@ -20,7 +20,7 @@ def create_queue(queue_name):
         queue = sqs_r.get_queue_by_name(QueueName=queue_name)
     except:
         queue = sqs_r.create_queue(QueueName=queue_name, Attributes=queue_attributes)
-
+        
 
 def list_all_queues(queue_name_prefix=''):
     all_queues = sqs_c.list_queues(QueueNamePrefix=queue_name_prefix)    

@@ -8,7 +8,6 @@ import json
 def get_command(site, mount='mount1'):
     queue_name = f"{site}_{mount}.fifo"
     content = sqs.get_queue_item(queue_name)
-
     if content is not False:
         return (content) 
     return json.dumps({"Body": "empty"})
