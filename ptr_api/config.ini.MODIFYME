@@ -1,3 +1,5 @@
+# Fill this out, and rename to config.ini.
+
 [postgresql]
 host=
 database=
