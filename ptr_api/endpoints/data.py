@@ -4,8 +4,10 @@ from flask import request, jsonify
 import json, os
 import psycopg2
 
+params = config_init.config()
+aws_params = params['aws']
 
-BUCKET_NAME = "photonranch-001"
+BUCKET_NAME = aws_params['bucket']
 
 def upload(site):
     content = json.loads(request.get_data())

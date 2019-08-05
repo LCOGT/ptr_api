@@ -2,9 +2,12 @@
 
 import boto3
 import psycopg2
+from ptr_api import config_init
 
-REGION = "us-east-1"
-URL_EXPIRATION = 3600 # Seconds until URL expiration
+params = config_init.config()
+aws_params = params['aws']
+
+REGION = aws_params['region']
 
 rds_c = boto3.client('rds', REGION)
 
