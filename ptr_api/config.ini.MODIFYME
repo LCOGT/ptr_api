@@ -1,0 +1,12 @@
+# Fill this out, and rename to config.ini.
+
+[postgresql]
+host=
+database=
+user=
+password=
+
+[aws]
+db_identifier=
+bucket=
+region=

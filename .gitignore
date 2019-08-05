@@ -16,3 +16,4 @@ other/
 .auth_env
 tests/.client_env
 api-auth-example/
+ptr_api/config.ini
