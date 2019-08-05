@@ -2,7 +2,7 @@
 
 # Required for ElasticBeanstalk deploy.
 
-from ptr_api.application import application
+from application import application
 
 if __name__ == "__main__":
     application.run()
