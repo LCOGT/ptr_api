@@ -21,3 +21,35 @@ def get_last_modified(cursor, connection, k):
         print("Error while retrieving records:", error)
     return images
   
+def images_by_site_query(cursor, site):
+    sql = "SELECT image_root FROM images WHERE site = '%s'" % site
+    try:
+        cursor.execute(sql)
+        images = cursor.fetchall()
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+    
+    return images
+
+def images_by_observer_query(cursor, observer):
+    sql = "SELECT image_root FROM images WHERE observer = '%s'" % observer
+    try:
+        cursor.execute(sql)
+        images = cursor.fetchall()
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+    
+    return images
+
+def images_by_date_range_query(cursor, start_date, end_date):
+    '''
+    NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
+    '''
+    sql = "SELECT image_root FROM images WHERE capture_date BETWEEN '%s' AND '%s'" % (start_date, end_date)
+    try:
+        cursor.execute(sql)
+        images = cursor.fetchall()
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+    
+    return images
