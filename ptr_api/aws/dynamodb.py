@@ -3,11 +3,12 @@
 import boto3, time, os, json
 from dotenv import load_dotenv
 from os.path import join, dirname
+from ptr_api import config_init
 
+params = config_init.config()
+aws_params = params['aws']
 
-# Determine if we will run a local aws serice for testing.
-LOCAL_AWS = 0
-REGION = 'us-east-1'
+REGION = aws_params['region']
 
 dynamodb_r = boto3.resource('dynamodb', REGION)
 dynamodb_c = boto3.client('dynamodb', REGION)

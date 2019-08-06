@@ -2,9 +2,12 @@
 
 import boto3
 import psycopg2
+from ptr_api import config_init
 
-REGION = "us-east-1"
-URL_EXPIRATION = 3600 # Seconds until URL expiration
+params = config_init.config()
+aws_params = params['aws']
+
+REGION = aws_params['region']
 
 rds_c = boto3.client('rds', REGION)
 
@@ -18,3 +21,35 @@ def get_last_modified(cursor, connection, k):
         print("Error while retrieving records:", error)
     return images
   
+def images_by_site_query(cursor, site):
+    sql = "SELECT image_root FROM images WHERE site = '%s'" % site
+    try:
+        cursor.execute(sql)
+        images = cursor.fetchall()
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+    
+    return images
+
+def images_by_observer_query(cursor, observer):
+    sql = "SELECT image_root FROM images WHERE observer = '%s'" % observer
+    try:
+        cursor.execute(sql)
+        images = cursor.fetchall()
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+    
+    return images
+
+def images_by_date_range_query(cursor, start_date, end_date):
+    '''
+    NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
+    '''
+    sql = "SELECT image_root FROM images WHERE capture_date BETWEEN '%s' AND '%s'" % (start_date, end_date)
+    try:
+        cursor.execute(sql)
+        images = cursor.fetchall()
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+    
+    return images

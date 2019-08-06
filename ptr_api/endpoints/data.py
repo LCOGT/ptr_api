@@ -4,8 +4,10 @@ from flask import request, jsonify
 import json, os
 import psycopg2
 
+params = config_init.config()
+aws_params = params['aws']
 
-BUCKET_NAME = "photonranch-001"
+BUCKET_NAME = aws_params['bucket']
 
 def upload(site):
     content = json.loads(request.get_data())
@@ -188,3 +190,63 @@ def get_k_recent_images2(site, k=1):
             print('Connection closed')
 
     return json.dumps(latest_k_jpgs)
+
+def get_images_by_site(cursor, site):
+    connection = None
+    try:
+        params = config_init.config()
+        db_params = params['postgresql']
+        connection = psycopg2.connect(**db_params)
+        cursor = connection.cursor()
+
+        images = psql.images_by_site_query(cursor, site)
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if connection is not None:
+            connection.close()
+            print('Connection closed')
+    
+    return images
+
+def get_images_by_observer(cursor, observer):
+    connection = None
+    try:
+        params = config_init.config()
+        db_params = params['postgresql']
+        connection = psycopg2.connect(**db_params)
+        cursor = connection.cursor()
+
+        images = psql.images_by_observer_query(cursor, observer)
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if connection is not None:
+            connection.close()
+            print('Connection closed')
+    
+    return images
+
+def get_images_by_date_range(cursor, start_date, end_date):
+    '''
+    NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
+    '''
+    connection = None
+    try:
+        params = config_init.config()
+        db_params = params['postgresql']
+        connection = psycopg2.connect(**db_params)
+        cursor = connection.cursor()
+
+        images = psql.images_by_date_range_query(cursor, start_date, end_date)
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if connection is not None:
+            connection.close()
+            print('Connection closed')
+    
+    return images

@@ -2,8 +2,12 @@
 
 import boto3
 import os
+from ptr_api import config_init
 
-REGION = 'us-east-1'
+params = config_init.config()
+aws_params = params['aws']
+
+REGION = aws_params['region']
 
 sqs_r = boto3.resource('sqs', REGION)
 sqs_c = boto3.client('sqs', REGION)
@@ -43,7 +47,7 @@ def get_queue_item(queue_name):
         #AttributeNames=[ 'device' ],
         MaxNumberOfMessages=1,    
         #MessageAttributeNames=[ 'All' ],
-        VisibilityTimeout=10,         #This CANNOT BE 0!  
+        VisibilityTimeout=10, # This CANNOT BE 0!  
         WaitTimeSeconds=3 # 0==short polling, 0<x<20==long polling
     )
     try:
