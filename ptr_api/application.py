@@ -188,6 +188,25 @@ class LatestKImages(Resource):
 
 #-----------------------------------------------------------------------------#
 
+# Image information from ptr archive
+
+class ImagesBySite(Resource):
+    def get(self, site):
+        return data.get_images_by_site(site)
+
+class ImagesByObserver(Resource):
+    def get(self, observer):
+        return data.get_images_by_observer(observer)
+
+class ImagesByDateRange(Resource):
+    '''
+    NOTE: Dates must be in UTC timestamp format
+    '''
+    def get(self, start_date, end_date):
+        return data.get_images_by_date_range(start_date, end_date)
+
+#-----------------------------------------------------------------------------#
+
 # Site Configurations
 class Config(Resource):
 
@@ -229,6 +248,11 @@ api.add_resource(Upload,'/<string:site>/upload/')
 api.add_resource(Download,'/<string:site>/download/')
 api.add_resource(LatestImage, '/<string:site>/latest_image/')
 api.add_resource(LatestKImages, '/<string:site>/latest_images/<int:k>/')
+
+api.add_resource(ImagesBySite, '/image_by_site/<string:site>/')
+api.add_resource(ImagesByObserver, '/image_by_observer/<string:observer>/')
+api.add_resource(ImagesByDateRange, '/image_by_date_range/<string:start_date>/<string:end_date>/')
+
 api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
 

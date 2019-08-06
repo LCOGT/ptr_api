@@ -25,7 +25,13 @@ def images_by_site_query(cursor, site):
     sql = "SELECT image_root FROM images WHERE site = '%s'" % site
     try:
         cursor.execute(sql)
-        images = cursor.fetchall()
+        data = cursor.fetchall()
+
+        images = []
+        for sublist in data:
+            for image in sublist:
+                images.append(image)
+
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
     
@@ -35,7 +41,13 @@ def images_by_observer_query(cursor, observer):
     sql = "SELECT image_root FROM images WHERE observer = '%s'" % observer
     try:
         cursor.execute(sql)
-        images = cursor.fetchall()
+        data = cursor.fetchall()
+
+        images = []
+        for sublist in data:
+            for image in sublist:
+                images.append(image)
+
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
     
@@ -48,7 +60,13 @@ def images_by_date_range_query(cursor, start_date, end_date):
     sql = "SELECT image_root FROM images WHERE capture_date BETWEEN '%s' AND '%s'" % (start_date, end_date)
     try:
         cursor.execute(sql)
-        images = cursor.fetchall()
+        data = cursor.fetchall()
+
+        images = []
+        for sublist in data:
+            for image in sublist:
+                images.append(image)
+
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
     
