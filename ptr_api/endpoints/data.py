@@ -151,7 +151,8 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
 
 
 def get_k_recent_images2(site, k=1):
-    ''' Get the k most recent jpgs in a site's s3 directory.
+    ''' 
+    Get the k most recent jpgs in a site's s3 directory.
     '''
     connection = None
     try:
@@ -167,8 +168,8 @@ def get_k_recent_images2(site, k=1):
             root = latest_k_files[i]
             
             # TODO: Change the path string to be read from database
-            path = "%s/raw_data/2019/%s-E13.jpg" % (site,root)
-            filename = "%s-E13.jpg" % root
+            path = f"{site}/raw_data/2019/{root}-E13.jpg"
+            filename = f"{root}-E13.jpg"
 
             url = s3.get_presigned_url(BUCKET_NAME, path)
             jpg_properties = {
