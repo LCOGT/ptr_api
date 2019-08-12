@@ -191,7 +191,7 @@ def get_k_recent_images2(site, k=1):
 
     return json.dumps(latest_k_jpgs)
 
-def get_images_by_site(cursor, site):
+def get_images_by_site(site):
     connection = None
     try:
         params = config_init.config()
@@ -199,7 +199,7 @@ def get_images_by_site(cursor, site):
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
 
-        images = psql.images_by_site_query(cursor, site)
+        images = rds.images_by_site_query(cursor, site)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -210,7 +210,7 @@ def get_images_by_site(cursor, site):
     
     return images
 
-def get_images_by_observer(cursor, observer):
+def get_images_by_observer(observer):
     connection = None
     try:
         params = config_init.config()
@@ -218,7 +218,7 @@ def get_images_by_observer(cursor, observer):
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
 
-        images = psql.images_by_observer_query(cursor, observer)
+        images = rds.images_by_observer_query(cursor, observer)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -229,7 +229,7 @@ def get_images_by_observer(cursor, observer):
     
     return images
 
-def get_images_by_date_range(cursor, start_date, end_date):
+def get_images_by_date_range(start_date, end_date):
     '''
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
     '''
@@ -240,7 +240,7 @@ def get_images_by_date_range(cursor, start_date, end_date):
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
 
-        images = psql.images_by_date_range_query(cursor, start_date, end_date)
+        images = rds.images_by_date_range_query(cursor, start_date, end_date)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -250,3 +250,5 @@ def get_images_by_date_range(cursor, start_date, end_date):
             print('Connection closed')
     
     return images
+
+    

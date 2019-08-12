@@ -22,7 +22,7 @@ def get_last_modified(cursor, connection, k):
     return images
   
 def images_by_site_query(cursor, site):
-    sql = "SELECT image_root FROM images WHERE site = '%s'"
+    sql = "SELECT image_root FROM images WHERE site = %s"
     try:
         cursor.execute(sql, (site,))
         images = [result[0] for result in cursor.fetchall()]
@@ -32,7 +32,8 @@ def images_by_site_query(cursor, site):
     return images
 
 def images_by_observer_query(cursor, observer):
-    sql = "SELECT image_root FROM images WHERE observer = '%s'"
+    sql = "SELECT image_root FROM images WHERE observer = %s"
+    print(observer)
     try:
         cursor.execute(sql, (observer,))
         images = [result[0] for result in cursor.fetchall()]
@@ -45,7 +46,7 @@ def images_by_date_range_query(cursor, start_date, end_date):
     '''
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
     '''
-    sql = "SELECT image_root FROM images WHERE capture_date BETWEEN '%s' AND '%s'"
+    sql = "SELECT image_root FROM images WHERE capture_date BETWEEN %s AND %s"
     try:
         cursor.execute(sql, (start_date, end_date,))
         images = [result[0] for result in cursor.fetchall()]
