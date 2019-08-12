@@ -127,9 +127,6 @@ if __name__=="__main__":
     win = tk.Tk()
     win.title("PTR-API: Endpoint Tester")
     endpoint_vars = []
-
-    def close_window(): 
-        win.destroy()
     
     test_all_endpoints = tk.IntVar()
     tk.Checkbutton(win, text='Test All Endpoints', variable=test_all_endpoints).grid(row=1, sticky=tk.W)

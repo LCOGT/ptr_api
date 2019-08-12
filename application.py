@@ -184,7 +184,6 @@ class LatestKImages(Resource):
 
 class ImagesBySite(Resource):
     def get(self, site):
-        print("This is the site: " + site)
         return data.get_images_by_site(site)
 
 class ImagesByObserver(Resource):
