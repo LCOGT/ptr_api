@@ -175,16 +175,27 @@ class Download(Resource):
         return data.download(site)
 
 class LatestImage(Resource):
-    '''
-    NOTE: New function that queries database is called 'get_k_recent_images2'
-          To go back to the original method, remove 2 from the end of the function name
-    '''
     def get(self, site):
         return data.get_k_recent_images2(site, 1)
 
 class LatestKImages(Resource):
     def get(self, site, k):
         return data.get_k_recent_images2(site, k)
+
+class ImagesBySite(Resource):
+    def get(self, site):
+        return data.get_images_by_site(site)
+
+class ImagesByObserver(Resource):
+    def get(self, observer):
+        return data.get_images_by_observer(observer)
+
+class ImagesByDateRange(Resource):
+    '''
+    NOTE: Dates must be in UTC timestamp format
+    '''
+    def get(self, start_date, end_date):
+        return data.get_images_by_date_range(start_date, end_date)
 
 #-----------------------------------------------------------------------------#
 
@@ -231,5 +242,9 @@ api.add_resource(LatestImage, '/<string:site>/latest_image/')
 api.add_resource(LatestKImages, '/<string:site>/latest_images/<int:k>/')
 api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
+
+api.add_resource(ImagesBySite, '/image_by_site/<string:site>/')
+api.add_resource(ImagesByObserver, '/image_by_observer/<string:observer>/')
+api.add_resource(ImagesByDateRange, '/image_by_date_range/<string:start_date>/<string:end_date>/')
 
 
