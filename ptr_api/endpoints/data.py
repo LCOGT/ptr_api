@@ -162,32 +162,35 @@ def get_k_recent_images2(site, k=1):
         db_params = params['postgresql']
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
-
-        # List of k last modified files returned from ptr archive query
-        latest_k_files = rds.get_last_modified(cursor, connection, k)
-        latest_k_jpgs = []
-        for i in range(len(latest_k_files)):
-            root = latest_k_files[i]
-            
-            # TODO: Change the path string to be read from database
-            path = f"{site}/raw_data/2019/{root}-E13.jpg"
-            filename = f"{root}-E13.jpg"
-
-            url = s3.get_presigned_url(BUCKET_NAME, path)
-            jpg_properties = {
-                "recency_order": i,
-                "url": url,
-                "filename": filename,
-                "last_modified": "I AM A DATE"
-            }
-            latest_k_jpgs.append(jpg_properties)
-
     except (Exception, psycopg2.DatabaseError) as error:
+        print(f"Connection to database failed.")
         print(error)
-    finally:
-        if connection is not None:
-            connection.close()
-            print('Connection closed')
+        return json.dumps([])
+        
+
+    # List of k last modified files returned from ptr archive query
+    latest_k_files = rds.get_site_last_modified(cursor, connection, site, k)
+    latest_k_jpgs = []
+    for i in range(len(latest_k_files)):
+        root = latest_k_files[i]
+        
+        # TODO: Change the path string to be read from database
+        path = f"{site}/raw_data/2019/{root}-E13.jpg"
+        filename = f"{root}-E13.jpg"
+
+        url = s3.get_presigned_url(BUCKET_NAME, path)
+        jpg_properties = {
+            "recency_order": i,
+            "url": url,
+            "filename": filename,
+            "last_modified": "I AM A DATE"
+        }
+        latest_k_jpgs.append(jpg_properties)
+
+
+    if connection is not None:
+        connection.close()
+        print('Connection closed')
 
     return json.dumps(latest_k_jpgs)
 
