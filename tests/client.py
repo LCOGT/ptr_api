@@ -118,7 +118,7 @@ if __name__=="__main__":
         {'uri': 'site1/download/', 'method': 'POST', 'payload': sample_upload_request},
         {'uri': 'all/config/', 'method': 'GET', 'payload':None},
         {'uri': 'WMD/latest_images/3/', 'method': 'GET', 'payload':None},
-        {'uri': 'image_by_site/test/', 'method': 'GET', 'payload':None},
+        {'uri': 'image_by_site/WMD/', 'method': 'GET', 'payload':None},
         {'uri': 'image_by_observer/WER/', 'method': 'GET', 'payload':None},
         {'uri': 'image_by_date_range/2019-07-10 02:00:00/2019-07-10 04:00:00/', 'method': 'GET', 'payload':None},
     ]
