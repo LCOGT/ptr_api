@@ -43,7 +43,9 @@ def get_recent_image(site):
     return json.dumps({"url": url, "filename": filename})
 
 def get_k_recent_images(site, k=1):
-    ''' Get the k most recent jpgs in a site's s3 directory.
+    ''' 
+    UNUSED; REPLACED BY get_k_recent_images2
+    Get the k most recent jpgs in a site's s3 directory.
 
     This implementation assumes that an s3 query will not return elements in sorted order,
     (which I've not verified), so it will fetch all the jpgs, sort them by last modified,
@@ -170,29 +172,29 @@ def get_k_recent_images2(site, k=1):
 
     # List of k last modified files returned from ptr archive query
     latest_k_files = rds.get_site_last_modified(cursor, connection, site, k)
-    latest_k_jpgs = []
-    for i in range(len(latest_k_files)):
-        root = latest_k_files[i]
-        
-        # TODO: Change the path string to be read from database
-        path = f"{site}/raw_data/2019/{root}-E13.jpg"
-        filename = f"{root}-E13.jpg"
-
-        url = s3.get_presigned_url(BUCKET_NAME, path)
-        jpg_properties = {
-            "recency_order": i,
-            "url": url,
-            "filename": filename,
-            "last_modified": "I AM A DATE"
-        }
-        latest_k_jpgs.append(jpg_properties)
-
+#    latest_k_jpgs = []
+#    for i in range(len(latest_k_files)):
+#        root = latest_k_files[i]
+#        
+#        # TODO: Change the path string to be read from database
+#        path = f"{site}/raw_data/2019/{root}-E13.jpg"
+#        filename = f"{root}-E13.jpg"
+#
+#        url = s3.get_presigned_url(BUCKET_NAME, path)
+#        jpg_properties = {
+#            "recency_order": i,
+#            "url": url,
+#            "filename": filename,
+#            "last_modified": "I AM A DATE"
+#        }
+#        latest_k_jpgs.append(jpg_properties)
+#
 
     if connection is not None:
         connection.close()
-        print('Connection closed')
+        #print('Connection closed')
 
-    return json.dumps(latest_k_jpgs)
+    return json.dumps(latest_k_files)
 
 def get_images_by_site(site):
     connection = None
