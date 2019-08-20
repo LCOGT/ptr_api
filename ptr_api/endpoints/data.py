@@ -108,23 +108,6 @@ def get_k_recent_images(site, k=1):
 
     # List of k last modified files returned from ptr archive query
     latest_k_files = rds.get_site_last_modified(cursor, connection, site, k)
-#    latest_k_jpgs = []
-#    for i in range(len(latest_k_files)):
-#        root = latest_k_files[i]
-#        
-#        # TODO: Change the path string to be read from database
-#        path = f"{site}/raw_data/2019/{root}-E13.jpg"
-#        filename = f"{root}-E13.jpg"
-#
-#        url = s3.get_presigned_url(BUCKET_NAME, path)
-#        jpg_properties = {
-#            "recency_order": i,
-#            "url": url,
-#            "filename": filename,
-#            "last_modified": "I AM A DATE"
-#        }
-#        latest_k_jpgs.append(jpg_properties)
-#
 
     if connection is not None:
         connection.close()
