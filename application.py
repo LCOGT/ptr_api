@@ -176,11 +176,11 @@ class Download(Resource):
 
 class LatestImage(Resource):
     def get(self, site):
-        return data.get_k_recent_images2(site, 1)
+        return data.get_k_recent_images(site, 1)
 
 class LatestKImages(Resource):
     def get(self, site, k):
-        return data.get_k_recent_images2(site, k)
+        return data.get_k_recent_images(site, k)
 
 class ImagesBySite(Resource):
     def get(self, site):
