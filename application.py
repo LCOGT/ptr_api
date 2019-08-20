@@ -181,6 +181,7 @@ class LatestImage(Resource):
 class LatestKImages(Resource):
     def get(self, site, k):
         return data.get_k_recent_images(site, k)
+    def post(self, site, k)
 
 class ImagesBySite(Resource):
     def get(self, site):
