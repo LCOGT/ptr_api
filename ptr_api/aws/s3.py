@@ -74,9 +74,9 @@ def get_presigned_post_url(bucket_name, object_name):
         response = s3_c.generate_presigned_post(
             Bucket=bucket_name,
             Key=object_name,
-            ExpiresIn=URL_EXPIRATION 
+            ExpiresIn=s3_put_ttl,
         )
-    except ClientError as e:
+    except Exception as e:
         print(e)
         return {'error': e}
 
