@@ -114,7 +114,7 @@ def images_by_date_range_query(cursor, start_date, end_date):
     
     return images
 
-    def images_by_user_query(cursor, user):
+def images_by_user_query(cursor, user):
     sql = "SELECT image_root FROM images JOIN projects ON images.image_id = projects.image_id"
     try:
         cursor.execute(sql, (observer,))
@@ -123,7 +123,3 @@ def images_by_date_range_query(cursor, start_date, end_date):
         print("Error while retrieving records:", error)
     
     return images
-
-        SELECT OrderNumber, TotalAmount, FirstName, LastName, City, Country
-      FROM [Order] JOIN Customer
-        ON [Order].CustomerId = Customer.Id
