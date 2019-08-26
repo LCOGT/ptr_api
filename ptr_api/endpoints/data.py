@@ -278,12 +278,17 @@ def get_images_by_user(username):
         connection = psycopg2.connect(**db_params)
         cursor = connection.cursor()
 
-        image_list = rds.images_by_observer_query(cursor, observer)
+        sql = "SELECT user_id FROM users WHERE user_name = %s"
+        cursor.execute(sql, (username,))
+        user_id = cursor.fetchone()
+
+        image_list = rds.images_by_user_query(cursor, user_id)
 
         images = []
         for base_filename in image_list:
             # TODO: Change the path string to be read from database
             # TODO: Retrieve capture date within rds.py and return with images
+            # TODO: Change path to not depend on site (md5 hash)
             path = f"WMD/raw_data/2019/{base_filename}-E13.jpg"
 
             url = s3.get_presigned_url(BUCKET_NAME, path)
@@ -303,4 +308,9 @@ def get_images_by_user(username):
     
     return json.dumps(images)
 
+if __name__=="__main__":
+    print("hello")
+    username = "wmd_admin"
+    images = get_images_by_user(username)
+    print(images)
     

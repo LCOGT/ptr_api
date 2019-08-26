@@ -120,6 +120,7 @@ if __name__=="__main__":
         {'uri': 'WMD/latest_images/3/', 'method': 'GET', 'payload':None},
         {'uri': 'image_by_site/WMD/', 'method': 'GET', 'payload':None},
         {'uri': 'image_by_observer/WER/', 'method': 'GET', 'payload':None},
+        {'uri': 'image_by_user/wmd_admin/', 'method': 'GET', 'payload':None},
         {'uri': 'image_by_date_range/2019-07-10 02:00:00/2019-07-10 04:00:00/', 'method': 'GET', 'payload':None},
     ]
 

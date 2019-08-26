@@ -114,10 +114,11 @@ def images_by_date_range_query(cursor, start_date, end_date):
     
     return images
 
-def images_by_user_query(cursor, user):
-    sql = "SELECT image_root FROM images JOIN projects ON images.image_id = projects.image_id"
+def images_by_user_query(cursor, user_id):
+
+    sql = "SELECT base_filename FROM images WHERE created_user = %s AND e13_jpg_exists = True"
     try:
-        cursor.execute(sql, (observer,))
+        cursor.execute(sql, (user_id,))
         images = [result[0] for result in cursor.fetchall()]
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
