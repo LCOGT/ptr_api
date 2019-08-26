@@ -34,7 +34,7 @@ Use the python package-management system in order to install required modules wi
 ```
 
 ### Generate required config files
-In order to run and test the API, two seperate config files must be created. One config file will be read in by the API's main application and the second will be used by the client application for testing. These files will hold authentication credentials to be loaded in as environment variables. The values for these variables can be obtained from the LCOGT System Information Sheet.
+In order to run and test the API, seperate config files must be created. Two config file will be read in by the API's main application and one will be used by the client application for testing. These files will hold authentication credentials to be loaded in as environment variables. The values for these variables can be obtained from the LCOGT System Information Sheet.
 
 ##### Create .auth_env
 Instantiate and populate a file titled '.auth_env' within the main ptr-flask-api directory. This file provides identification information from Amazon Cognito in order for the API to have access to certain Amazon services, such as DynamoDB, SQS, and S3.
@@ -45,6 +45,10 @@ Instantiate and populate a file titled '.auth_env' within the main ptr-flask-api
 ~ auth_APP_CLIENT_ID = app client id
 ~ auth_APP_CLIENT_SECRET = app client secret
 ```
+
+##### Populate config.ini
+Locate the file titled 'config.ini.MODIFYME' and make new copy of it. Rename the copy 'config.ini'. You should notice that this file is no longer being tracked by git. Do not modify or remove the original config.ini.MODIFYME file unless you are changing the way config variables are to be read in by the API. Populate the file config.ini appropriately using information located in the System Information Sheet under the ptr tab.
+
 
 ### Deploying the API
 It should be possible to now host the API locally from any workspace by using the command:
