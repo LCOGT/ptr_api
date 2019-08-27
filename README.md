@@ -36,9 +36,7 @@ Use the python package-management system in order to install required modules wi
 ### Generate required config files
 In order to run and test the API, seperate config files must be created. Two config file will be read in by the API's main application and one will be used by the client application for testing. These files will hold authentication credentials to be loaded in as environment variables. The values for these variables can be obtained from the LCOGT System Information Sheet.
 
-
-##### Populate .env
-Locate the file titled '.envDEFAULT' and make new copy of it. Rename the copy simply '.env'. You should notice that this file is no longer being tracked by git. Do not modify or remove the original .envDEFAULT file unless you are changing the way config variables are to be read in by the API. Populate the file .env appropriately using information located in the System Information Sheet under the ptr tab.
+In order to setup the config file for the main application, first locate the file titled '.envDEFAULT' and make new copy of it. Rename the copy simply '.env'. You should notice that this file is no longer being tracked by git. Do not modify or remove the original .envDEFAULT file unless you are changing the way config variables are to be read in by the API. Populate the file .env appropriately using information located in the System Information Sheet under the ptr tab.
 
 
 ### Deploying the API
@@ -57,7 +55,7 @@ Enter the directory labeled 'tests' in order to access the testing client applic
 (venv)$ cd tests
 ```
 
-Instantiate and populate a file titled '.client_env' within the tests directory. This file provides identification information from Amazon Cognito in order for the client application to access the API and test all endpoints.
+Instantiate and populate a second config file titled '.client_env' within the tests directory. This file provides identification information from Amazon Cognito in order for the client application to access the API and test all endpoints.
 ```
 ~ client_REGION = region
 ~ client_USERPOOL_ID = userpool id
