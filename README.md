@@ -34,9 +34,11 @@ Use the python package-management system in order to install required modules wi
 ```
 
 ### Generate required config files
-In order to run and test the API, seperate config files must be created. Two config file will be read in by the API's main application and one will be used by the client application for testing. These files will hold authentication credentials to be loaded in as environment variables. The values for these variables can be obtained from the LCOGT System Information Sheet.
+In order to run and test the API, two seperate config files must be created. One config file will be read in by the API's main application and one will be used by the client application for testing. These files will hold authentication credentials to be loaded in as environment variables. The values for these variables can be obtained from the LCOGT System Information Sheet.
 
 In order to setup the config file for the main application, first locate the file titled '.envDEFAULT' and make new copy of it. Rename the copy simply '.env'. You should notice that this file is no longer being tracked by git. Do not modify or remove the original .envDEFAULT file unless you are changing the way config variables are to be read in by the API. Populate the file .env appropriately using information located in the System Information Sheet under the ptr tab.
+
+The second config file deals with testing and is outlined later on.
 
 
 ### Deploying the API
