@@ -1,16 +1,13 @@
 # aws/s3.py
 
-import boto3
+import boto3, os
 from botocore.client import Config
 from cachetools import cached, TTLCache
 from ptr_api import config_init
 
-params = config_init.config()
-aws_params = params['aws']
-REGION = aws_params['region']
-
 s3_put_ttl = 300  # This is how long the post url is valid
 s3_get_ttl = 3600 # This is how long a get url is valid
+REGION = os.environ.get('region')
 
 s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 

@@ -1,14 +1,9 @@
 # aws/dynamodb.py
 
-import boto3, time, os, json
-from dotenv import load_dotenv
-from os.path import join, dirname
-from ptr_api import config_init
+import boto3, os
 
-params = config_init.config()
-aws_params = params['aws']
 
-REGION = aws_params['region']
+REGION = os.environ.get('region')
 
 dynamodb_r = boto3.resource('dynamodb', REGION)
 dynamodb_c = boto3.client('dynamodb', REGION)

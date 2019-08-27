@@ -1,13 +1,16 @@
 from ptr_api.aws import s3, dynamodb, rds
-from ptr_api import config_init
 from flask import request, jsonify
 import json, os
 import psycopg2
 
-params = config_init.config()
-aws_params = params['aws']
 
-BUCKET_NAME = aws_params['bucket']
+BUCKET_NAME = os.environ.get('bucket')
+CONNECTION_PARAMETERS = {
+    'host': os.environ['host'],
+    'database': os.environ['database'],
+    'user': os.environ['user'],
+    'password': os.environ['password']
+}
 
 def upload(site):
     content = json.loads(request.get_data())
@@ -96,9 +99,7 @@ def get_k_recent_images(site, k=1):
     '''
     connection = None
     try:
-        params = config_init.config()
-        db_params = params['postgresql']
-        connection = psycopg2.connect(**db_params)
+        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
     except (Exception, psycopg2.DatabaseError) as error:
         print(f"Connection to database failed.")
@@ -118,9 +119,7 @@ def get_k_recent_images(site, k=1):
 def get_images_by_site(site):
     connection = None
     try:
-        params = config_init.config()
-        db_params = params['postgresql']
-        connection = psycopg2.connect(**db_params)
+        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
 
         images = rds.images_by_site_query(cursor, site)
@@ -137,9 +136,7 @@ def get_images_by_site(site):
 def get_images_by_observer(observer):
     connection = None
     try:
-        params = config_init.config()
-        db_params = params['postgresql']
-        connection = psycopg2.connect(**db_params)
+        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
 
         image_list = rds.images_by_observer_query(cursor, observer)
@@ -173,9 +170,7 @@ def get_images_by_date_range(start_date, end_date):
     '''
     connection = None
     try:
-        params = config_init.config()
-        db_params = params['postgresql']
-        connection = psycopg2.connect(**db_params)
+        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
 
         images = rds.images_by_date_range_query(cursor, start_date, end_date)
@@ -189,4 +184,45 @@ def get_images_by_date_range(start_date, end_date):
     
     return images
 
+def get_images_by_user(username):
+    connection = None
+    try:
+        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
+        cursor = connection.cursor()
+
+        sql = "SELECT user_id FROM users WHERE user_name = %s"
+        cursor.execute(sql, (username,))
+        user_id = cursor.fetchone()
+
+        image_list = rds.images_by_user_query(cursor, user_id)
+
+        images = []
+        for base_filename in image_list:
+            # TODO: Change the path string to be read from database
+            # TODO: Retrieve capture date within rds.py and return with images
+            # TODO: Change path to not depend on site (md5 hash)
+            path = f"WMD/raw_data/2019/{base_filename}-E13.jpg"
+
+            url = s3.get_presigned_url(BUCKET_NAME, path)
+            jpg_properties = {
+                "url": url,
+                "filename": base_filename,
+                "last_modified": "I AM A DATE"
+            }
+            images.append(jpg_properties)
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if connection is not None:
+            connection.close()
+            print('Connection closed')
+    
+    return json.dumps(images)
+
+if __name__=="__main__":
+    print("hello")
+    username = "wmd_admin"
+    images = get_images_by_user(username)
+    print(images)
     

@@ -1,13 +1,9 @@
 # aws/sqs.py
 
-import boto3
-import os
-from ptr_api import config_init
+import boto3, os
 
-params = config_init.config()
-aws_params = params['aws']
 
-REGION = aws_params['region']
+REGION = os.environ.get('region')
 
 sqs_r = boto3.resource('sqs', REGION)
 sqs_c = boto3.client('sqs', REGION)

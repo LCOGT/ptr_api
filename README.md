@@ -34,17 +34,12 @@ Use the python package-management system in order to install required modules wi
 ```
 
 ### Generate required config files
-In order to run and test the API, two seperate config files must be created. One config file will be read in by the API's main application and the second will be used by the client application for testing. These files will hold authentication credentials to be loaded in as environment variables. The values for these variables can be obtained from the LCOGT System Information Sheet.
+In order to run and test the API, two seperate config files must be created. One config file will be read in by the API's main application and one will be used by the client application for testing. These files will hold authentication credentials to be loaded in as environment variables. The values for these variables can be obtained from the LCOGT System Information Sheet.
 
-##### Create .auth_env
-Instantiate and populate a file titled '.auth_env' within the main ptr-flask-api directory. This file provides identification information from Amazon Cognito in order for the API to have access to certain Amazon services, such as DynamoDB, SQS, and S3.
-```
-~ LOCAL_AWS = boolean indicating if you want to run a local aws instance (not recommended)
-~ auth_REGION = region
-~ auth_USERPOOL_ID = userpool id
-~ auth_APP_CLIENT_ID = app client id
-~ auth_APP_CLIENT_SECRET = app client secret
-```
+In order to setup the config file for the main application, first locate the file titled '.envDEFAULT' and make new copy of it. Rename the copy simply '.env'. You should notice that this file is no longer being tracked by git. Do not modify or remove the original .envDEFAULT file unless you are changing the way config variables are to be read in by the API. Populate the file .env appropriately using information located in the System Information Sheet under the ptr tab.
+
+The second config file deals with testing and is outlined later on.
+
 
 ### Deploying the API
 It should be possible to now host the API locally from any workspace by using the command:
@@ -62,7 +57,7 @@ Enter the directory labeled 'tests' in order to access the testing client applic
 (venv)$ cd tests
 ```
 
-Instantiate and populate a file titled '.client_env' within the tests directory. This file provides identification information from Amazon Cognito in order for the client application to access the API and test all endpoints.
+Instantiate and populate a second config file titled '.client_env' within the tests directory. This file provides identification information from Amazon Cognito in order for the client application to access the API and test all endpoints.
 ```
 ~ client_REGION = region
 ~ client_USERPOOL_ID = userpool id
