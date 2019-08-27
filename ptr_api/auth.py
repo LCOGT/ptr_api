@@ -4,13 +4,10 @@ from flask import request, jsonify, abort
 from warrant import Cognito
 from warrant.exceptions import TokenVerificationException
 from functools import wraps
-from dotenv import load_dotenv
 import os
-from os.path import join, dirname
 
-# AWS cognito account info imported from .env
-dotenv_path_authenv = join(dirname(__file__),'.auth_env')
-load_dotenv(dotenv_path_authenv)
+
+# # AWS cognito account info imported from .env
 REGION = os.environ.get('auth_REGION')
 USERPOOL_ID = os.environ.get('auth_USERPOOL_ID')
 APP_CLIENT_ID = os.environ.get('auth_APP_CLIENT_ID')

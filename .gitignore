@@ -13,6 +13,7 @@ other/
 
 
 # AWS credentials
+.env
 .auth_env
 tests/.client_env
 api-auth-example/

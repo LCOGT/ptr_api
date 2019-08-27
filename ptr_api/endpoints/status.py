@@ -5,7 +5,7 @@
 # The structure (but not function content) will likely change again anyways. 
 
 from flask import request, jsonify
-import json, time, boto3
+import json
 from ptr_api.aws import dynamodb
 
 

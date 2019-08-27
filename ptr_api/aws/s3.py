@@ -1,14 +1,10 @@
 # aws/s3.py
 
-import boto3
+import boto3, os
 from botocore.client import Config
-from ptr_api import config_init
 
-params = config_init.config()
-aws_params = params['aws']
 
-REGION = aws_params['region']
-
+REGION = os.environ.get('region')
 URL_EXPIRATION = 3600 # Seconds until URL expiration
 
 s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))

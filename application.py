@@ -28,7 +28,7 @@
 # Testing a new git workflow.
 
 #-----------------------------------------------------------------------------#
-
+from ptr_api import environment
 from ptr_api.endpoints import status, commands, data, sites
 from flask import Flask, request, jsonify
 import json, boto3, time

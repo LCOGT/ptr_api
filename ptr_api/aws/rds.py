@@ -1,19 +1,15 @@
 # aws/rds.py
 
-import boto3
+import boto3, os
 import psycopg2
 import datetime, time
 from ptr_api.aws import s3
-from ptr_api import config_init
 
-params = config_init.config()
-aws_params = params['aws']
 
-REGION = aws_params['region']
-BUCKET_NAME = aws_params['bucket']
+REGION = os.environ.get('region')
+BUCKET_NAME = os.environ.get('bucket')
 
 rds_c = boto3.client('rds', REGION)
-
 
 def get_last_modified(cursor, connection, k):
     sql = (
@@ -105,6 +101,7 @@ def images_by_date_range_query(cursor, start_date, end_date):
     '''
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
     '''
+    print(os.environ.get('hello'))
     sql = "SELECT image_root FROM images WHERE capture_date BETWEEN %s AND %s"
     try:
         cursor.execute(sql, (start_date, end_date,))
