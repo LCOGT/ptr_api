@@ -13,7 +13,7 @@ rds_c = boto3.client('rds', REGION)
 
 def get_last_modified(cursor, connection, k):
     sql = (
-        "SELECT image_root FROM images "
+        "SELECT base_filename FROM images "
         "WHERE capture_date is not null "
         "ORDER BY capture_date "
         "DESC LIMIT %s"
@@ -27,7 +27,7 @@ def get_last_modified(cursor, connection, k):
 
 def get_site_last_modified(cursor, connection, site, k):
     sql = (
-        "SELECT image_root, capture_date, observer, right_ascension, declination, filter_used, exposure_time, airmass, e13_jpg_exists, e13_fits_exists "
+        "SELECT base_filename, capture_date, created_user, right_ascension, declination, filter_used, exposure_time, airmass, e13_jpg_exists, e13_fits_exists "
         "FROM images "
         "WHERE site = %s "
         "AND capture_date is not null "
@@ -61,7 +61,7 @@ def get_site_last_modified(cursor, connection, site, k):
             "recency_order": index,
             "base_filename": item[0],
             "capture_date": capture_timestamp_milis,
-            "observer": item[2],
+            "created_user": item[2],
             "right_ascension": item[3],
             "declination": item[4],
             "filter_used": item[5],
@@ -78,19 +78,9 @@ def get_site_last_modified(cursor, connection, site, k):
     return images
   
 def images_by_site_query(cursor, site):
-    sql = "SELECT image_root FROM images WHERE site = %s"
+    sql = "SELECT base_filename FROM images WHERE site = %s"
     try:
         cursor.execute(sql, (site,))
-        images = [result[0] for result in cursor.fetchall()]
-    except (Exception, psycopg2.Error) as error :
-        print("Error while retrieving records:", error)
-    
-    return images
-
-def images_by_observer_query(cursor, observer):
-    sql = "SELECT image_root FROM images WHERE observer = %s"
-    try:
-        cursor.execute(sql, (observer,))
         images = [result[0] for result in cursor.fetchall()]
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
@@ -101,8 +91,7 @@ def images_by_date_range_query(cursor, start_date, end_date):
     '''
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
     '''
-    print(os.environ.get('hello'))
-    sql = "SELECT image_root FROM images WHERE capture_date BETWEEN %s AND %s"
+    sql = "SELECT base_filename FROM images WHERE capture_date BETWEEN %s AND %s"
     try:
         cursor.execute(sql, (start_date, end_date,))
         images = [result[0] for result in cursor.fetchall()]
