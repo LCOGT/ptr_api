@@ -214,37 +214,6 @@ def get_images_by_site(site):
     
     return images
 
-def get_images_by_observer(observer):
-    connection = None
-    try:
-        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
-        cursor = connection.cursor()
-
-        image_list = rds.images_by_observer_query(cursor, observer)
-
-        images = []
-        for base_filename in image_list:
-            # TODO: Change the path string to be read from database
-            # TODO: Retrieve capture date within rds.py and return with images
-            path = f"WMD/raw_data/2019/{base_filename}-E13.jpg"
-
-            url = s3.get_presigned_url(BUCKET_NAME, path)
-            jpg_properties = {
-                "url": url,
-                "filename": base_filename,
-                "last_modified": "I AM A DATE"
-            }
-            images.append(jpg_properties)
-
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if connection is not None:
-            connection.close()
-            print('Connection closed')
-    
-    return json.dumps(images)
-
 def get_images_by_date_range(start_date, end_date):
     '''
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00

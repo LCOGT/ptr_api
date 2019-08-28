@@ -186,10 +186,6 @@ class ImagesBySite(Resource):
     def get(self, site):
         return data.get_images_by_site(site)
 
-class ImagesByObserver(Resource):
-    def get(self, observer):
-        return data.get_images_by_observer(observer)
-
 class ImagesByUser(Resource):
     def get(self, username):
         return data.get_images_by_user(username)
@@ -248,7 +244,6 @@ api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
 
 api.add_resource(ImagesBySite, '/image_by_site/<string:site>/')
-api.add_resource(ImagesByObserver, '/image_by_observer/<string:observer>/')
 api.add_resource(ImagesByUser, '/image_by_user/<string:username>/')
 api.add_resource(ImagesByDateRange, '/image_by_date_range/<string:start_date>/<string:end_date>/')
 
