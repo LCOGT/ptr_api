@@ -59,6 +59,7 @@ def get_site_last_modified(cursor, connection, site, k):
 
         image = {
             "recency_order": index,
+            "site": site,
             "base_filename": item[0],
             "capture_date": capture_timestamp_milis,
             "created_user": item[2],
@@ -69,7 +70,6 @@ def get_site_last_modified(cursor, connection, site, k):
             "airmass": item[7],
             "jpg13_url": jpg13_url,
             "fits13_url": fits13_url,
-            "url": jpg13_url, # to use with old code while rewriting this function. temporary.
         }
         images.append(image)
     

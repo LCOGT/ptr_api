@@ -26,69 +26,6 @@ def download(site):
     return url
 
   
-def get_recent_image(site):
-    table_name = f"{site}_images"
-    table = dynamodb.get_table(table_name)
-    response = table.scan()
-
-    items = []
-    for i in response['Items']:
-        items.append((i, int(float(i['upload_time']))))
-
-    url = ''
-    filename = ''
-    if len(items) != 0:
-        items.sort(key=lambda x: x[1])
-        latest_item = items[-1][0]
-        object_name = latest_item['path']
-        filename = latest_item['filename']
-        url = s3.get_presigned_url(BUCKET_NAME, object_name)
-    return json.dumps({"url": url, "filename": filename})
-
-def get_k_recent_images(site, k=1):
-    ''' 
-    UNUSED; REPLACED BY get_k_recent_images2
-    Get the k most recent jpgs in a site's s3 directory.
-
-    This implementation assumes that an s3 query will not return elements in sorted order,
-    (which I've not verified), so it will fetch all the jpgs, sort them by last modified,
-    and grab the k most recent ones. 
-    
-    TODO: implement some sort of caching so that s3 does not need to dump all of the files
-    with each request.
-
-    '''
-
-    # List of jpgs returned from s3 contents query
-    jpgs = []
-
-    # Get all jpgs in S3
-    for key in get_matching_s3_objects(bucket=BUCKET_NAME, prefix=site, suffix='.jpg'):
-        jpgs.append(key)
-
-    # Sort by date last modified.
-    jpgs.sort(key=lambda x: x['LastModified'], reverse=True)
-
-    latest_k_jpgs = []
-
-    # Save the url, filename, and modification time.
-    for i in range(k):
-        if i > len(jpgs): break
-        this_jpg = jpgs[i]
-        path = this_jpg['Key']
-        filename = path.split('/')[-1]
-        url = s3.get_presigned_url(BUCKET_NAME, path)
-        last_modified = str(this_jpg['LastModified'])
-        jpg_properties = {
-            "recency_order": i,
-            "url": url,
-            "filename": filename,
-            "last_modified": last_modified,
-            }
-        latest_k_jpgs.append(jpg_properties)
-
-    return json.dumps(latest_k_jpgs)
-
 
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
@@ -144,7 +81,6 @@ def get_matching_s3_objects(bucket, prefix='', suffix=''):
         except KeyError:
             break
 
-
 def get_matching_s3_keys(bucket, prefix='', suffix=''):
     """
     Generate the keys in an S3 bucket.
@@ -157,7 +93,7 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
         yield obj['Key']
 
 
-def get_k_recent_images2(site, k=1):
+def get_k_recent_images(site, k=1):
     ''' 
     Get the k most recent jpgs in a site's s3 directory.
     '''
@@ -173,23 +109,6 @@ def get_k_recent_images2(site, k=1):
 
     # List of k last modified files returned from ptr archive query
     latest_k_files = rds.get_site_last_modified(cursor, connection, site, k)
-#    latest_k_jpgs = []
-#    for i in range(len(latest_k_files)):
-#        root = latest_k_files[i]
-#        
-#        # TODO: Change the path string to be read from database
-#        path = f"{site}/raw_data/2019/{root}-E13.jpg"
-#        filename = f"{root}-E13.jpg"
-#
-#        url = s3.get_presigned_url(BUCKET_NAME, path)
-#        jpg_properties = {
-#            "recency_order": i,
-#            "url": url,
-#            "filename": filename,
-#            "last_modified": "I AM A DATE"
-#        }
-#        latest_k_jpgs.append(jpg_properties)
-#
 
     if connection is not None:
         connection.close()
