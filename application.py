@@ -221,6 +221,17 @@ class Config(Resource):
         '''
         return sites.put_config(site)
 
+    @ptr_api.auth.required
+    def delete(self, site):
+        '''
+        Delete the configuration for a site. The reason for this endpoint is to
+        keep the site configurations clean and up to date. 
+
+        This will remove the corresponding entry in the dynamodb site_config
+        table. 
+        '''
+        return sites.delete_config(site)
+
 class AllConfig(Resource):
 
     def get(self):

@@ -66,6 +66,16 @@ def get_item(table_name, key):
     item = response['Item']
     return item
 
+
+def delete_item(table_name, key):
+    ''' Delete an item from dynamodb. 
+    @param key (dict): value is attribute name, val is attribute value.
+    '''
+    table = get_table(table_name)
+    response = table.delete_item(Key=key)
+    return response
+    
+
 def scan(table_name):
     ''' return all items in the table in a list of dicts '''
     table = get_table(table_name)

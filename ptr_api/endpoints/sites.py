@@ -6,6 +6,7 @@ import json
 
 
 def get_config(site):
+    ''' Used in application.Config.get '''
     # Get the dynamodb table that stores configurations for all sites.
     # Entries are identified by the k:v pair where k="site", v="<sitename>".
     key = {"site":site}
@@ -14,6 +15,7 @@ def get_config(site):
 
 
 def put_config(site):
+    ''' Used in application.Config.put '''
 
     # Receive the JSON config sent in the request.
     config_dict = json.loads(request.get_data())
@@ -38,6 +40,13 @@ def put_config(site):
     init_from_config(site, config_dict)
 
     return jsonify(response)
+
+def delete_config(site):
+    ''' Used in application.Config.delete '''
+    key = {"site": site}
+    response = dynamodb.delete_item("site_configurations", key)
+    return response
+
 
 
 # Parse a site configuration, create any resources that don't currently exist.
