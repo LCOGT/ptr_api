@@ -41,8 +41,12 @@ def put_config(site):
 
     return jsonify(response)
 
-def delete_config(site):
+def remove_site_resources(site):
     ''' Used in application.Config.delete '''
+    # First, use the config to delete all site resources
+    delete_from_config(site)
+
+    # Finally, remove the config itself.
     key = {"site": site}
     response = dynamodb.delete_item("site_configurations", key)
     return response
@@ -51,15 +55,13 @@ def delete_config(site):
 
 # Parse a site configuration, create any resources that don't currently exist.
 def init_from_config(site, config=None):
-
     if config is None:
         # Get the config for a site from the global config store
         key = {"site": site}
         config_dict = dynamodb.get_item('site_configurations', key)
         config = config_dict["configuration"]
-
+        
     # SQS queue creation, one queue per mount
-    #site_mounts = config['mounts'] # a list of string names
     site_mounts = config.get('mount', {}).keys()
     for mount in site_mounts:
         queue_name = f"{site}_{mount}.fifo"
@@ -72,9 +74,28 @@ def init_from_config(site, config=None):
 
     # Create a dynamodb table to track data from each site. Does nothing if
     # it already exists.
-    image_dynamodb_name = f"{site}_images"
-    dynamodb.create_table(image_dynamodb_name)
+    #image_dynamodb_name = f"{site}_images"
+    #dynamodb.create_table(image_dynamodb_name)
 
+# Remove AWS resources for a given site, based on the site's configuration.
+def delete_from_config(site, config=None):
     
+    if config is None:
+        # Get the config for a site from the global config store
+        key = {"site": site}
+        config_dict = dynamodb.get_item('site_configurations', key)
+        config = config_dict["configuration"]
+
+    # Remove SQS queues (one per mount). 
+    site_mounts = config.get('mount', {}).keys()
+    for mount in site_mounts: 
+        queue_name = f"{site}_{mount}.fifo"
+        sqs.delete_queue(queue_name, site)
+
+    # Delete the dynamodb table used for storing status
+    table_name = str(site)
+    dynamodb.delete_table(table_name)
+    
+
 def get_all_config():
     return dynamodb.scan('site_configurations')

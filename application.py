@@ -230,7 +230,7 @@ class Config(Resource):
         This will remove the corresponding entry in the dynamodb site_config
         table. 
         '''
-        return sites.delete_config(site)
+        return sites.remove_site_resources(site)
 
 class AllConfig(Resource):
 
