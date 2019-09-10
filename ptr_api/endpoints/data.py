@@ -25,8 +25,6 @@ def download(site):
     url = s3.get_presigned_url(BUCKET_NAME, object_name)
     return url
 
-  
-
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -92,7 +90,6 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
     for obj in get_matching_s3_objects(bucket, prefix, suffix):
         yield obj['Key']
 
-
 def get_k_recent_images(site, k=1):
     ''' 
     Get the k most recent jpgs in a site's s3 directory.
@@ -106,13 +103,11 @@ def get_k_recent_images(site, k=1):
         print(error)
         return json.dumps([])
         
-
     # List of k last modified files returned from ptr archive query
     latest_k_files = rds.get_site_last_modified(cursor, connection, site, k)
 
     if connection is not None:
         connection.close()
-        #print('Connection closed')
 
     return json.dumps(latest_k_files)
 
@@ -159,26 +154,51 @@ def get_images_by_user(username):
         connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
 
-        sql = "SELECT user_id FROM users WHERE user_name = %s"
-        cursor.execute(sql, (username,))
-        user_id = cursor.fetchone()
+        # retrieve the user_id associated with the given username
+        user_id = rds.get_user_id(cursor, username)
 
-        image_list = rds.images_by_user_query(cursor, user_id)
+        # retrieve list of image ids associated with a user_id
+        image_ids = rds.image_ids_by_user_query(cursor, user_id)
+        
+        # retrieve the image records corresponding to list of image_ids
+        start_time = time.time()
+        image_records = rds.get_image_records_query(cursor, image_ids)
+        print("--- %s seconds ---" % (time.time() - start_time))
 
-        images = []
-        for base_filename in image_list:
-            # TODO: Change the path string to be read from database
-            # TODO: Retrieve capture date within rds.py and return with images
-            # TODO: Change path to not depend on site (md5 hash)
-            path = f"WMD/raw_data/2019/{base_filename}-E13.jpg"
+        image_packets = [] # packet(s) of image information to be returned
+        print(image_records)
+        for image_record in image_records:
 
-            url = s3.get_presigned_url(BUCKET_NAME, path)
-            jpg_properties = {
-                "url": url,
-                "filename": base_filename,
-                "last_modified": "I AM A DATE"
-            }
-            images.append(jpg_properties)
+            capture_date = image_record['capture_date']
+
+            if capture_date is not None: # Make sure junk images are not included
+                # TODO: Change S3 path to not depend on hardcoded site name
+                # retrieve presigned url from base_filename in order to download image jpg
+                base_filename = image_record['base_filename']
+                if base_filename[:3] == "WMD":
+                    path = f"WMD/raw_data/2019/{base_filename}-E13.jpg"
+                elif base_filename[:3] == "wmd":
+                    path = f"wmd/raw_data/2019/{base_filename}-E13.jpg"
+
+                url = s3.get_presigned_url(BUCKET_NAME, path)
+
+                capture_date_string = capture_date.strftime("%m/%d/%Y, %H:%M:%S")
+
+                site = image_record['site']
+                right_ascension = image_record['right_ascension']
+                declination = image_record['declination']
+
+                # place image information in package structure
+                image_packet= {
+                    "jpg13_url": url,
+                    "base_filename": base_filename,
+                    "capture_date": capture_date_string,
+                    "site": site,
+                    "right_ascension": right_ascension,
+                    "declination": declination,
+                    "recency_order": 1
+                }
+                image_packets.append(image_packet)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -187,11 +207,6 @@ def get_images_by_user(username):
             connection.close()
             print('Connection closed')
     
-    return json.dumps(images)
+    return json.dumps(image_packets)
 
-if __name__=="__main__":
-    print("hello")
-    username = "wmd_admin"
-    images = get_images_by_user(username)
-    print(images)
     
