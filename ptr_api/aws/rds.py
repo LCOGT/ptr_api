@@ -27,7 +27,7 @@ def get_last_modified(cursor, connection, k):
 
 def get_site_last_modified(cursor, connection, site, k):
     sql = (
-        "SELECT base_filename, capture_date, created_user, right_ascension, declination, filter_used, exposure_time, airmass, e13_jpg_exists, e13_fits_exists "
+        "SELECT base_filename, capture_date, created_user, right_ascension, declination, filter_used, exposure_time, airmass, ex13_jpg_exists, ex13_fits_exists "
         "FROM images "
         "WHERE site = %s "
         "AND capture_date is not null "
@@ -47,10 +47,10 @@ def get_site_last_modified(cursor, connection, site, k):
         fits13_url = ''
         # Get urls to some of the images, if they exist
         if item[8]: 
-            full_jpg13_path = f"{site}/raw_data/2019/{item[0]}-E13.jpg"
+            full_jpg13_path = f"{site}/raw_data/2019/{item[0]}-EX13.jpg"
             jpg13_url = s3.get_presigned_url(BUCKET_NAME,full_jpg13_path)
         if item[9]:
-            full_fits13_path = f"{site}/raw_data/2019/{item[0]}-E13.fits.bz2"
+            full_fits13_path = f"{site}/raw_data/2019/{item[0]}-EX13.fits.bz2"
             fits13_url = s3.get_presigned_url(BUCKET_NAME,full_fits13_path)
 
         # Format the capture_date to a javascript-ready timestamp (eg. miliseconds)
@@ -102,7 +102,7 @@ def images_by_date_range_query(cursor, start_date, end_date):
 
 def images_by_user_query(cursor, user_id):
 
-    sql = "SELECT base_filename FROM images WHERE created_user = %s AND e13_jpg_exists = True"
+    sql = "SELECT base_filename FROM images WHERE created_user = %s AND ex13_jpg_exists = True"
     try:
         cursor.execute(sql, (user_id,))
         images = [result[0] for result in cursor.fetchall()]
