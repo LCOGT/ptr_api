@@ -25,7 +25,7 @@ def get_last_modified(cursor, connection, k):
         print("Error while retrieving records:", error)
     return images
 
-def get_site_last_modified(cursor, connection, site, k):
+def get_images_by_site(cursor, connection, site, k):
     sql = (
         "SELECT base_filename, capture_date, created_user, right_ascension, declination, filter_used, exposure_time, airmass, ex13_jpg_exists, ex13_fits_exists "
         "FROM images "
@@ -110,3 +110,49 @@ def images_by_user_query(cursor, user_id):
         print("Error while retrieving records:", error)
     
     return images
+
+def get_user_id(cursor, username):
+    print(username)
+    sql = "SELECT user_id FROM users WHERE user_name = %s"
+    try:
+        cursor.execute(sql, (username,))
+        user_id = cursor.fetchone()
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+
+    return user_id
+
+def image_ids_by_user_query(cursor, user_id):
+    sql = "SELECT image_id FROM images WHERE created_user = %s AND ex13_jpg_exists = True ORDER BY capture_date DESC"
+    try:
+        cursor.execute(sql, (user_id,))
+        image_ids = [result[0] for result in cursor.fetchall()]
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+
+    return image_ids
+
+def get_image_records_query(cursor, image_ids):
+    
+    sql = (
+        "SELECT base_filename, capture_date, site, right_ascension, declination FROM images "
+        "WHERE image_id IN %s "
+        "AND ex13_jpg_exists = True "
+        "ORDER BY capture_date DESC"
+    )
+    image_ids = tuple(image_ids)
+    cursor.execute(sql, (image_ids,))
+    result = cursor.fetchall()
+
+    image_records = []
+    for entry in result:
+        image_record = {
+            "base_filename": entry[0],
+            "capture_date": entry[1],
+            "site": entry[2],
+            "right_ascension": entry[3],
+            "declination": entry[4]
+        }
+        image_records.append(image_record)
+
+    return image_records

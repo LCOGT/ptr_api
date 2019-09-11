@@ -104,7 +104,7 @@ def get_k_recent_images(site, k=1):
         return json.dumps([])
         
     # List of k last modified files returned from ptr archive query
-    latest_k_files = rds.get_site_last_modified(cursor, connection, site, k)
+    latest_k_files = rds.get_images_by_site(cursor, connection, site, k)
 
     if connection is not None:
         connection.close()
@@ -161,12 +161,9 @@ def get_images_by_user(username):
         image_ids = rds.image_ids_by_user_query(cursor, user_id)
         
         # retrieve the image records corresponding to list of image_ids
-        start_time = time.time()
         image_records = rds.get_image_records_query(cursor, image_ids)
-        print("--- %s seconds ---" % (time.time() - start_time))
 
         image_packets = [] # packet(s) of image information to be returned
-        print(image_records)
         for image_record in image_records:
 
             capture_date = image_record['capture_date']
@@ -175,10 +172,7 @@ def get_images_by_user(username):
                 # TODO: Change S3 path to not depend on hardcoded site name
                 # retrieve presigned url from base_filename in order to download image jpg
                 base_filename = image_record['base_filename']
-                if base_filename[:3] == "WMD":
-                    path = f"WMD/raw_data/2019/{base_filename}-E13.jpg"
-                elif base_filename[:3] == "wmd":
-                    path = f"wmd/raw_data/2019/{base_filename}-E13.jpg"
+                path = f"wmd/raw_data/2019/{base_filename}-EX13.jpg"
 
                 url = s3.get_presigned_url(BUCKET_NAME, path)
 
