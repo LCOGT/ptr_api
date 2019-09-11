@@ -89,3 +89,24 @@ Then go into the tests directory and run the test client
 (venv)$ python client.py
 ```
 An interface should appear allowing you to select the endpoints that you want to test (the "Test all endpoints" checkbox is currently not working).
+
+## Endpoints
+
+### Image Package Structure
+When calling an endpoint that returns image information, an image package will be returned in the following structure:
+```
+{
+  "recency_order": sort order index used by UI, integer
+  "site": site name, 3 characters
+  "base_filename": root image name, 26 characters ex: "wmd-gf01-20190909-00005259"
+  "capture_date": date of capture, string ex: "year-month-day hour:min:sec"
+  "created_user": created_user, integer (pk for user information in database)
+  "right_ascension": right_ascension, double precision
+  "declination": declination, double precision
+  "filter_used": filter_used, string
+  "exposure_time": exposure_time, double precision
+  "airmass": airmass, double precision
+  "jpg13_url": jpg13_url, bool
+  "fits13_url": fits13_url, bool
+}
+```
