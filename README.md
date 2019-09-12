@@ -89,3 +89,30 @@ Then go into the tests directory and run the test client
 (venv)$ python client.py
 ```
 An interface should appear allowing you to select the endpoints that you want to test (the "Test all endpoints" checkbox is currently not working).
+
+## Endpoints
+
+### Image Package Structure
+When calling an endpoint that returns image information, an image package will be returned in the following structure:
+```
+{
+  "recency_order": sort order index used by UI, integer
+  "image_id": pk in images table, integer
+  "site": site name, 3 characters
+  "base_filename": root image name, 26 characters ex: "wmd-gf01-20190909-00005259"
+  "capture_date": date of capture, string (javascript-ready timestamp)
+  "sort_date": date of capture, string (javascript-ready timestamp)
+  "right_ascension": right_ascension, double precision
+  "declination": declination, double precision
+  "altitude": altitude, double precision
+  "azimuth": azimuth, double presicion
+  "header": JSON of full header
+  "filter_used": filter_used, string
+  "airmass": airmass, double precision
+  "exposure_time": exposure_time, double precision
+  "created_user": created_user, integer (pk for user information in database)
+  "jpg13_url": jpg13_url, string
+  "fits13_url": fits13_url, string
+}
+```
+All attributes present in the images table within the ptr database are placed inside the image package except for the booleans ex01_fits_exists, ex13_fits_exists, and ex13_jpg_exists. Instead, the two extra fields jpg13_url and fits13_url are appended to the end of the package for use when downloading images from S3. Some date formatting is also done before the image package is sent: capture_date and sort_date are converted to a javascript-ready timestamp (eg. miliseconds).
