@@ -104,29 +104,13 @@ def get_k_recent_images(site, k=1):
         return json.dumps([])
         
     # List of k last modified files returned from ptr archive query
-    latest_k_files = rds.get_images_by_site(cursor, connection, site, k)
+    latest_k_files = rds.get_last_modified_by_site(cursor, connection, site, k)
 
     if connection is not None:
         connection.close()
 
     return json.dumps(latest_k_files)
 
-def get_images_by_site(site):
-    connection = None
-    try:
-        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
-        cursor = connection.cursor()
-
-        images = rds.images_by_site_query(cursor, site)
-
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if connection is not None:
-            connection.close()
-            print('Connection closed')
-    
-    return images
 
 def get_images_by_date_range(start_date, end_date):
     '''
@@ -137,14 +121,13 @@ def get_images_by_date_range(start_date, end_date):
         connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
 
-        images = rds.images_by_date_range_query(cursor, start_date, end_date)
+        images = rds.images_by_date_range(cursor, start_date, end_date)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
     finally:
         if connection is not None:
             connection.close()
-            print('Connection closed')
     
     return images
 
@@ -161,46 +144,15 @@ def get_images_by_user(username):
         image_ids = rds.image_ids_by_user_query(cursor, user_id)
         
         # retrieve the image records corresponding to list of image_ids
-        image_records = rds.get_image_records_query(cursor, image_ids)
+        images = rds.get_image_records_query(cursor, image_ids)
 
-        image_packets = [] # packet(s) of image information to be returned
-        for image_record in image_records:
-
-            capture_date = image_record['capture_date']
-
-            if capture_date is not None: # Make sure junk images are not included
-                # TODO: Change S3 path to not depend on hardcoded site name
-                # retrieve presigned url from base_filename in order to download image jpg
-                base_filename = image_record['base_filename']
-                path = f"wmd/raw_data/2019/{base_filename}-EX13.jpg"
-
-                url = s3.get_presigned_url(BUCKET_NAME, path)
-
-                capture_date_string = capture_date.strftime("%m/%d/%Y, %H:%M:%S")
-
-                site = image_record['site']
-                right_ascension = image_record['right_ascension']
-                declination = image_record['declination']
-
-                # place image information in package structure
-                image_packet= {
-                    "jpg13_url": url,
-                    "base_filename": base_filename,
-                    "capture_date": capture_date_string,
-                    "site": site,
-                    "right_ascension": right_ascension,
-                    "declination": declination,
-                    "recency_order": 1
-                }
-                image_packets.append(image_packet)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
     finally:
         if connection is not None:
             connection.close()
-            print('Connection closed')
     
-    return json.dumps(image_packets)
+    return json.dumps(images)
 
     

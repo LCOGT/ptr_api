@@ -1,8 +1,12 @@
 # aws/rds.py
-
+# TODO: clean up api and make sure only the functions that are being used are kept
+# also make sure to merge/pull
+# make sure data/rds keep seperate logic and use image package where you can
+# create header table in database and only store int
+# rename functions where appropriate
 import boto3, os
 import psycopg2
-import datetime, time
+import datetime, time, re
 from ptr_api.aws import s3
 
 
@@ -11,23 +15,10 @@ BUCKET_NAME = os.environ.get('bucket')
 
 rds_c = boto3.client('rds', REGION)
 
-def get_last_modified(cursor, connection, k):
-    sql = (
-        "SELECT base_filename FROM images "
-        "WHERE capture_date is not null "
-        "ORDER BY capture_date "
-        "DESC LIMIT %s"
-    )
-    try:
-        cursor.execute(sql, (k, ))
-        images = [result[0] for result in cursor.fetchmany(k)]
-    except (Exception, psycopg2.Error) as error :
-        print("Error while retrieving records:", error)
-    return images
 
-def get_images_by_site(cursor, connection, site, k):
+def get_last_modified_by_site(cursor, connection, site, k):
     sql = (
-        "SELECT base_filename, capture_date, created_user, right_ascension, declination, filter_used, exposure_time, airmass, ex13_jpg_exists, ex13_fits_exists "
+        "SELECT * "
         "FROM images "
         "WHERE site = %s "
         "AND capture_date is not null "
@@ -37,57 +28,14 @@ def get_images_by_site(cursor, connection, site, k):
     try:
         cursor.execute(sql, (site, k))
         db_query = cursor.fetchall()
+        images = generate_image_packages(db_query, cursor)
 
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
 
-    images = []
-    for index, item in enumerate(db_query):
-        jpg13_url = ''
-        fits13_url = ''
-        # Get urls to some of the images, if they exist
-        if item[8]: 
-            full_jpg13_path = f"{site}/raw_data/2019/{item[0]}-EX13.jpg"
-            jpg13_url = s3.get_presigned_url(BUCKET_NAME,full_jpg13_path)
-        if item[9]:
-            full_fits13_path = f"{site}/raw_data/2019/{item[0]}-EX13.fits.bz2"
-            fits13_url = s3.get_presigned_url(BUCKET_NAME,full_fits13_path)
-
-        # Format the capture_date to a javascript-ready timestamp (eg. miliseconds)
-        capture_date = item[1].timetuple()
-        capture_timestamp_milis = 1000*int(time.mktime(capture_date))
-
-        image = {
-            "recency_order": index,
-            "site": site,
-            "base_filename": item[0],
-            "capture_date": capture_timestamp_milis,
-            "created_user": item[2],
-            "right_ascension": item[3],
-            "declination": item[4],
-            "filter_used": item[5],
-            "exposure_time": item[6],
-            "airmass": item[7],
-            "jpg13_url": jpg13_url,
-            "fits13_url": fits13_url,
-        }
-        images.append(image)
-    
-    #images = [result for result in db_query]
-    #print('\n'.join('{}: {}'.format(*k) for k in enumerate(images)))
-    return images
-  
-def images_by_site_query(cursor, site):
-    sql = "SELECT base_filename FROM images WHERE site = %s"
-    try:
-        cursor.execute(sql, (site,))
-        images = [result[0] for result in cursor.fetchall()]
-    except (Exception, psycopg2.Error) as error :
-        print("Error while retrieving records:", error)
-    
     return images
 
-def images_by_date_range_query(cursor, start_date, end_date):
+def images_by_date_range(cursor, start_date, end_date):
     '''
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
     '''
@@ -100,19 +48,7 @@ def images_by_date_range_query(cursor, start_date, end_date):
     
     return images
 
-def images_by_user_query(cursor, user_id):
-
-    sql = "SELECT base_filename FROM images WHERE created_user = %s AND ex13_jpg_exists = True"
-    try:
-        cursor.execute(sql, (user_id,))
-        images = [result[0] for result in cursor.fetchall()]
-    except (Exception, psycopg2.Error) as error :
-        print("Error while retrieving records:", error)
-    
-    return images
-
 def get_user_id(cursor, username):
-    print(username)
     sql = "SELECT user_id FROM users WHERE user_name = %s"
     try:
         cursor.execute(sql, (username,))
@@ -135,24 +71,65 @@ def image_ids_by_user_query(cursor, user_id):
 def get_image_records_query(cursor, image_ids):
     
     sql = (
-        "SELECT base_filename, capture_date, site, right_ascension, declination FROM images "
+       "SELECT * "
+        "FROM images "
         "WHERE image_id IN %s "
-        "AND ex13_jpg_exists = True "
-        "ORDER BY capture_date DESC"
+        "ORDER BY sort_date DESC"
     )
+
     image_ids = tuple(image_ids)
     cursor.execute(sql, (image_ids,))
-    result = cursor.fetchall()
+    db_query = cursor.fetchall()
+    images = generate_image_packages(db_query, cursor)
 
-    image_records = []
-    for entry in result:
-        image_record = {
-            "base_filename": entry[0],
-            "capture_date": entry[1],
-            "site": entry[2],
-            "right_ascension": entry[3],
-            "declination": entry[4]
-        }
-        image_records.append(image_record)
+    return images
 
-    return image_records
+# This function generates image packages that contain all information from the images table.
+def generate_image_packages(db_query, cursor):
+    try:
+        get_attributes_sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'images' ORDER BY ORDINAL_POSITION"
+        cursor.execute(get_attributes_sql)
+        attributes = [attribute for sublist in cursor.fetchall() for attribute in sublist]
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+
+    image_packages = []
+    try:
+        for index, record in enumerate(db_query):
+            image_package = dict(zip(attributes, record))
+            image_package.update({'recency_order': index})
+
+            # Extract site and base_filename for image path construction
+            base_filename = image_package['base_filename']
+            site = image_package['site']
+            
+            # Format the capture_date to a javascript-ready timestamp (eg. miliseconds)
+            capture_date = image_package['capture_date'].timetuple()
+            capture_timestamp_milis = 1000*int(time.mktime(capture_date))
+            image_package['capture_date'] = capture_timestamp_milis
+
+            # Format the sort_date to a javascript-ready timestamp (eg. miliseconds)
+            sort_date = image_package['sort_date'].timetuple()
+            sort_timestamp_milis = 1000*int(time.mktime(sort_date))
+            image_package['sort_date'] = sort_timestamp_milis
+
+            jpg13_url = ''
+            fits13_url = ''
+            # Get urls to some of the images, if they exist
+            if image_package['ex13_jpg_exists']: 
+                full_jpg13_path = f"{site}/raw_data/2019/{base_filename}-EX13.jpg"
+                jpg13_url = s3.get_presigned_url(BUCKET_NAME,full_jpg13_path)
+            image_package.update({'jpg13_url': jpg13_url})
+            del image_package['ex13_jpg_exists']
+
+            if image_package['ex13_fits_exists']:
+                full_fits13_path = f"{site}/raw_data/2019/{base_filename}-EX13.fits.bz2"
+                fits13_url = s3.get_presigned_url(BUCKET_NAME,full_fits13_path)
+            image_package.update({'fits13_url': fits13_url})
+            del image_package['ex13_fits_exists']
+
+            image_packages.append(image_package)
+    except AttributeError:
+        print('Error: Missing attribute needed for image package generation.')
+
+    return image_packages

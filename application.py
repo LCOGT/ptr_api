@@ -254,7 +254,6 @@ api.add_resource(LatestKImages, '/<string:site>/latest_images/<int:k>/')
 api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
 
-api.add_resource(ImagesBySite, '/image_by_site/<string:site>/')
 api.add_resource(ImagesByUser, '/image_by_user/<string:username>/')
 api.add_resource(ImagesByDateRange, '/image_by_date_range/<string:start_date>/<string:end_date>/')
 
