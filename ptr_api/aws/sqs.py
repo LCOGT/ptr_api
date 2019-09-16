@@ -71,9 +71,8 @@ def get_queue_item(queue_name):
         # print(f"{message['Body']} was received.\n")
         delete_response = sqs_c.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt_handle)
         return message['Body']
-    except Exception as e:
-        print("error in get_queue_item: ")
-        print(e)
+    except KeyError as e:
+        #print("No new messages.")
         return False
 
 
