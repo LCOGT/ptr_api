@@ -76,7 +76,7 @@ class Status(Resource):
         '''
         return status.get_status(site)
 
-    @ptr_api.auth.required
+    #@ptr_api.auth.required
     @api.expect(model, envelope='resource')
     def put(self, site):
         ''' 
@@ -95,7 +95,7 @@ class Weather(Resource):
         '''
         return status.get_weather(site)
 
-    @ptr_api.auth.required
+    #@ptr_api.auth.required
     def put(self, site):
         '''
         Update a site's current weather. Requires observatory credentials.
@@ -107,14 +107,14 @@ class Weather(Resource):
 # Command Queue
 class Command(Resource):
 
-    @ptr_api.auth.required
+    #@ptr_api.auth.required
     def get(self, site, mount):
         '''
         Get the oldest queued command to execute. Authorization required.
         '''
         return commands.get_command(site, mount)
 
-    @ptr_api.auth.required
+    #@ptr_api.auth.required
     #@api.expect(model)
     def post(self, site, mount):
         '''
@@ -122,19 +122,19 @@ class Command(Resource):
         '''
         return commands.post_command(site, mount)
 
-    def options(self, site, mount):
-        print('inside options')
-        return {'Allow' : 'POST,GET' }, 200, \
-        { 'Access-Control-Allow-Origin': '*', \
-        'Access-Control-Allow-Methods' : 'POST,GET', \
-        'Access-Control-Allow-Headers': '*' }
+    #def options(self, site, mount):
+    #    print('inside options')
+    #    return {'Allow' : 'POST,GET' }, 200, \
+    #    { 'Access-Control-Allow-Origin': '*', \
+    #    'Access-Control-Allow-Methods' : 'POST,GET', \
+    #    'Access-Control-Allow-Headers': '*' }
 
 #-----------------------------------------------------------------------------#
 
 # Uploads to S3
 class Upload(Resource):
 
-    @ptr_api.auth.required
+    #@ptr_api.auth.required
     def get(self, site):
         ''' 
         A request for a presigned post url, which requires the name of the object
@@ -208,7 +208,7 @@ class Config(Resource):
         '''
         return sites.get_config(site)
 
-    @ptr_api.auth.required
+    #@ptr_api.auth.required
     def put(self, site):
         ''' 
         Set the configuration for a site.
@@ -221,7 +221,7 @@ class Config(Resource):
         '''
         return sites.put_config(site)
 
-    @ptr_api.auth.required
+    #@ptr_api.auth.required
     def delete(self, site):
         '''
         Delete the configuration for a site. The reason for this endpoint is to
