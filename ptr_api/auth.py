@@ -6,7 +6,6 @@ from warrant.exceptions import TokenVerificationException
 from functools import wraps
 import os
 
-
 # # AWS cognito account info imported from .env
 REGION = os.environ.get('auth_REGION')
 USERPOOL_ID = os.environ.get('auth_USERPOOL_ID')
@@ -26,7 +25,9 @@ def required(f):
         headers = request.headers
         try:
             auth_header = headers['Authorization'] 
+            print(auth_header)
             access_token = auth_header.split()[-1]
+            print(access_token)
             cognito_helper.verify_token(access_token, 'access_token', 'access')
             
             #groups = cognito_helper.client.admin_get_list_groups_for_user(Username=)
