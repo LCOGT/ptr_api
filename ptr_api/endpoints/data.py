@@ -137,15 +137,14 @@ def get_images_by_user(username):
         connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
 
-        # retrieve the user_id associated with the given username
-        user_id = rds.get_user_id(cursor, username)
+        # # retrieve the user_id associated with the given username
+        # user_id = rds.get_user_id(cursor, username)
 
-        # retrieve list of image ids associated with a user_id
-        image_ids = rds.image_ids_by_user_query(cursor, user_id)
+        # # retrieve list of image ids associated with a user_id
+        # image_ids = rds.image_ids_by_user_query(cursor, user_id)
         
         # retrieve the image records corresponding to list of image_ids
-        images = rds.get_image_records_query(cursor, image_ids)
-
+        images = rds.get_image_records_by_user(cursor, username)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
