@@ -4,11 +4,10 @@
 # make sure data/rds keep seperate logic and use image package where you can
 # create header table in database and only store int
 # rename functions where appropriate
-import boto3, os
+import boto3, os, sys
 import psycopg2
 import datetime, time, re
 from ptr_api.aws import s3
-
 
 REGION = os.environ.get('region')
 BUCKET_NAME = os.environ.get('bucket')
@@ -54,25 +53,31 @@ def images_by_date_range(cursor, start_date, end_date):
 def get_image_records_by_user(cursor, username):
     
     sql = (
-       "SELECT * "
+        "SELECT image_id, base_filename, site, capture_date, sort_date, right_ascension, declination, "
+        "ex01_fits_exists, ex13_fits_exists, ex13_jpg_exists, altitude, azimuth, filter_used, airmass, "
+        "exposure_time, user_name "
+
         "FROM images img "
         "INNER JOIN users usr "
         "ON usr.user_id = img.created_user "
         "WHERE usr.user_name = %s "
         "ORDER BY sort_date DESC "
-        "LIMIT 100 "
     )
 
     images = []
     try:
-        start = time.time()
-        print(f"start time: {start}")
+        #start = time.time()
+        #print(f"start time: {start}")
         cursor.execute(sql, (username,))
-        print(f"cursor executed: {time.time()-start}")
+        #cexecute = time.time()
+        #print(f"cursor executed: {cexecute-start}")
         db_query = cursor.fetchall()
-        print(f"cursor fetchall: {time.time()-start}")
+        #cfetch = time.time()
+        #print(f"cursor fetchall: {cfetch-cexecute}")
         images = generate_image_packages(db_query, cursor)
-        print(f"generated image package: {time.time()-start}")
+        #imagepackage = time.time()
+        #print(f"generated image package: {imagepackage-cfetch}")
+        #print(f"number of items: {len(images)}")
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
     
@@ -110,6 +115,7 @@ def generate_image_packages(db_query, cursor):
         ]
 
     image_packages = []
+
     try:
         for index, record in enumerate(db_query):
             image_package = dict(zip(attributes, record))
@@ -147,3 +153,4 @@ def generate_image_packages(db_query, cursor):
         print('Error: Missing attribute needed for image package generation.')
 
     return image_packages
+
