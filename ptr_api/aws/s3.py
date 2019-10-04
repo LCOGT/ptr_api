@@ -13,7 +13,7 @@ s3_c = boto3.client('s3', REGION, config=Config(signature_version='s3v4'))
 
 
 # docs: https://bit.ly/2Hqz7Bd
-@cached(cache=TTLCache(maxsize=1024, ttl=(0.9*s3_get_ttl)))
+@cached(cache=TTLCache(maxsize=65536, ttl=(0.9*s3_get_ttl)))
 def get_presigned_url(bucket_name, object_name):
     """
     Generate a publicly-accessible url to the specified image.
