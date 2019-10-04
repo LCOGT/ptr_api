@@ -40,7 +40,7 @@ class Client:
         local = f"http://localhost:{port}"
         eb = "http://api.photonranch.org"
         eb1 = "http://ptr-api.us-east-1.elasticbeanstalk.com"
-        return local 
+        return local
 
 
     def make_authenticated_header(self):

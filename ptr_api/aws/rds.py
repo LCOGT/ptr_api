@@ -25,6 +25,7 @@ def get_last_modified_by_site(cursor, connection, site, k):
         "ORDER BY sort_date "
         "DESC LIMIT %s "
     )
+    images = []
     try:
         cursor.execute(sql, (site, k))
         db_query = cursor.fetchall()
@@ -40,6 +41,7 @@ def images_by_date_range(cursor, start_date, end_date):
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
     '''
     sql = "SELECT base_filename FROM images WHERE capture_date BETWEEN %s AND %s"
+    images = []
     try:
         cursor.execute(sql, (start_date, end_date,))
         images = [result[0] for result in cursor.fetchall()]
@@ -48,50 +50,64 @@ def images_by_date_range(cursor, start_date, end_date):
     
     return images
 
-def get_user_id(cursor, username):
-    sql = "SELECT user_id FROM users WHERE user_name = %s"
-    try:
-        cursor.execute(sql, (username,))
-        user_id = cursor.fetchone()
-    except (Exception, psycopg2.Error) as error :
-        print("Error while retrieving records:", error)
 
-    return user_id
-
-def image_ids_by_user_query(cursor, user_id):
-    sql = "SELECT image_id FROM images WHERE created_user = %s AND ex13_jpg_exists = True ORDER BY capture_date DESC"
-    try:
-        cursor.execute(sql, (user_id,))
-        image_ids = [result[0] for result in cursor.fetchall()]
-    except (Exception, psycopg2.Error) as error :
-        print("Error while retrieving records:", error)
-
-    return image_ids
-
-def get_image_records_query(cursor, image_ids):
+def get_image_records_by_user(cursor, username):
     
     sql = (
        "SELECT * "
-        "FROM images "
-        "WHERE image_id IN %s "
-        "ORDER BY sort_date DESC"
+        "FROM images img "
+        "INNER JOIN users usr "
+        "ON usr.user_id = img.created_user "
+        "WHERE usr.user_name = %s "
+        "ORDER BY sort_date DESC "
+        "LIMIT 100 "
     )
 
-    image_ids = tuple(image_ids)
-    cursor.execute(sql, (image_ids,))
-    db_query = cursor.fetchall()
-    images = generate_image_packages(db_query, cursor)
-
+    images = []
+    try:
+        start = time.time()
+        print(f"start time: {start}")
+        cursor.execute(sql, (username,))
+        print(f"cursor executed: {time.time()-start}")
+        db_query = cursor.fetchall()
+        print(f"cursor fetchall: {time.time()-start}")
+        images = generate_image_packages(db_query, cursor)
+        print(f"generated image package: {time.time()-start}")
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+    
     return images
 
 # This function generates image packages that contain all information from the images table.
 def generate_image_packages(db_query, cursor):
-    try:
-        get_attributes_sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'images' ORDER BY ORDINAL_POSITION"
-        cursor.execute(get_attributes_sql)
-        attributes = [attribute for sublist in cursor.fetchall() for attribute in sublist]
-    except (Exception, psycopg2.Error) as error :
-        print("Error while retrieving records:", error)
+    
+    # try:
+    #     get_attributes_sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'images' ORDER BY ORDINAL_POSITION"
+    #     cursor.execute(get_attributes_sql)
+    #     attributes = [attribute for sublist in cursor.fetchall() for attribute in sublist]
+    #     print(attributes)
+    # except (Exception, psycopg2.Error) as error :
+    #     print("Error while retrieving records:", error)
+
+    attributes = [
+        'image_id',
+        'base_filename',
+        'site',
+        'capture_date',
+        'sort_date',
+        'right_ascension',
+        'declination',
+        'ex01_fits_exists',
+        'ex13_fits_exists',
+        'ex13_jpg_exists',
+        'altitude',
+        'azimuth',
+        'header',
+        'filter_used',
+        'airmass',
+        'exposure_time',
+        'created_user'
+        ]
 
     image_packages = []
     try:
@@ -120,13 +136,11 @@ def generate_image_packages(db_query, cursor):
                 full_jpg13_path = f"{site}/raw_data/2019/{base_filename}-EX13.jpg"
                 jpg13_url = s3.get_presigned_url(BUCKET_NAME,full_jpg13_path)
             image_package.update({'jpg13_url': jpg13_url})
-            del image_package['ex13_jpg_exists']
 
             if image_package['ex13_fits_exists']:
                 full_fits13_path = f"{site}/raw_data/2019/{base_filename}-EX13.fits.bz2"
                 fits13_url = s3.get_presigned_url(BUCKET_NAME,full_fits13_path)
             image_package.update({'fits13_url': fits13_url})
-            del image_package['ex13_fits_exists']
 
             image_packages.append(image_package)
     except AttributeError:
