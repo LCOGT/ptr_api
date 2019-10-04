@@ -133,6 +133,7 @@ def get_images_by_date_range(start_date, end_date):
 
 def get_images_by_user(username):
     connection = None
+    images = []
     try:
         connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()

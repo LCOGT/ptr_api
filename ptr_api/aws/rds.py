@@ -65,9 +65,14 @@ def get_image_records_by_user(cursor, username):
 
     images = []
     try:
+        start = time.time()
+        print(f"start time: {start}")
         cursor.execute(sql, (username,))
+        print(f"cursor executed: {time.time()-start}")
         db_query = cursor.fetchall()
+        print(f"cursor fetchall: {time.time()-start}")
         images = generate_image_packages(db_query, cursor)
+        print(f"generated image package: {time.time()-start}")
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
     
