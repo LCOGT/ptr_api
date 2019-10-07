@@ -38,8 +38,8 @@ class Client:
 
     def base_url(self, port):
         local = f"http://localhost:{port}"
-        eb = "http://api.photonranch.org"
-        eb1 = "http://ptr-api.us-east-1.elasticbeanstalk.com"
+       # eb = "http://api.photonranch.org"
+       # eb1 = "http://ptr-api.us-east-1.elasticbeanstalk.com"
         return local 
 
 
@@ -119,7 +119,7 @@ if __name__=="__main__":
         {'uri': 'all/config/', 'method': 'GET', 'payload':None},
         {'uri': 'wmd/latest_images/3/', 'method': 'GET', 'payload':None},
         {'uri': 'image_by_user/wmd_admin/', 'method': 'GET', 'payload':None},
-        {'uri': 'image_by_date_range/2019-07-10 02:00:00/2019-07-10 04:00:00/', 'method': 'GET', 'payload':None},
+        {'uri': 'image_by_date_range/wmd_admin/2019-09-25 20:01:00/2019-09-25 21:00:00/', 'method': 'GET', 'payload':None},
     ]
 
     # Create GUI for choosing endpoints to testing

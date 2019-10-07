@@ -194,8 +194,12 @@ class ImagesByDateRange(Resource):
     '''
     NOTE: Dates must be in UTC timestamp format
     '''
-    def get(self, start_date, end_date):
-        return data.get_images_by_date_range(start_date, end_date)
+    def get(self, username, start_date, end_date):
+        return data.get_images_by_date_range(username, start_date, end_date)
+
+class FilteredImages(Resource):
+    def get(self, filter_params):
+        return data.get_filtered_images(filter_params)
 
 #-----------------------------------------------------------------------------#
 
@@ -255,6 +259,6 @@ api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
 
 api.add_resource(ImagesByUser, '/image_by_user/<string:username>/')
-api.add_resource(ImagesByDateRange, '/image_by_date_range/<string:start_date>/<string:end_date>/')
-
+api.add_resource(ImagesByDateRange, '/image_by_date_range/<string:username>/<string:start_date>/<string:end_date>/')
+api.add_resource(FilteredImages, '/filtered_images/')
 
