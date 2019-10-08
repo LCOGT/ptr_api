@@ -38,15 +38,9 @@ class Client:
 
     def base_url(self, port):
         local = f"http://localhost:{port}"
-<<<<<<< HEAD
         eb = "http://api.photonranch.org"
         eb1 = "http://ptr-api.us-east-1.elasticbeanstalk.com"
         return local
-=======
-       # eb = "http://api.photonranch.org"
-       # eb1 = "http://ptr-api.us-east-1.elasticbeanstalk.com"
-        return local 
->>>>>>> image filter by date range + general filtering
 
 
     def make_authenticated_header(self):

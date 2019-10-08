@@ -51,17 +51,26 @@ def images_by_date_range(cursor, user_id, start_date, end_date):
 
 
 
-def filtered_images(cursor, content):
-    user_id = content.user_id
-    start_date = content.start_date
-    end_date = content.end_date
-    site = content.site
-    filter_used = content.filter
+def filtered_images(cursor, filter_params):
+    start_date = filter_params.start_date
+    end_date = filter_params.end_date
+    site = filter_params.site
+    filter_used = filter_params.filter
 
-    sql = "SELECT * FROM images WHERE created_user=%s AND capture_date BETWEEN %s AND %s"
+    sql = (
+        "SELECT image_id, base_filename, site, capture_date, sort_date, right_ascension, declination, "
+        "ex01_fits_exists, ex13_fits_exists, ex13_jpg_exists, altitude, azimuth, filter_used, airmass, "
+        "exposure_time, user_name "
+
+        "FROM images img "
+        "INNER JOIN users usr "
+        "ON usr.user_id = img.created_user "
+        "WHERE usr.user_name = %s "
+        "ORDER BY sort_date DESC "
+    )
 
     try:
-        cursor.execute(sql, (user_id, start_date, end_date, site, filter_used))
+        cursor.execute(sql, (start_date, end_date, site, filter_used))
         db_query = cursor.fetchall()
         images = generate_image_packages(db_query, cursor)
     except (Exception, psycopg2.Error) as error :
@@ -79,6 +88,7 @@ def get_user_id(cursor, username):
         user_id = cursor.fetchone()
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
+
 
 def get_image_records_by_user(cursor, username):
     
