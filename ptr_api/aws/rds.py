@@ -17,7 +17,9 @@ rds_c = boto3.client('rds', REGION)
 
 def get_last_modified_by_site(cursor, connection, site, k):
     sql = (
-        "SELECT * "
+        "SELECT image_id, base_filename, site, capture_date, sort_date, right_ascension, declination, "
+        "ex01_fits_exists, ex13_fits_exists, ex13_jpg_exists, altitude, azimuth, filter_used, airmass, "
+        "exposure_time, created_user "
         "FROM images "
         "WHERE site = %s "
         "AND capture_date is not null "
@@ -55,7 +57,7 @@ def get_image_records_by_user(cursor, username):
     sql = (
         "SELECT image_id, base_filename, site, capture_date, sort_date, right_ascension, declination, "
         "ex01_fits_exists, ex13_fits_exists, ex13_jpg_exists, altitude, azimuth, filter_used, airmass, "
-        "exposure_time, user_name "
+        "exposure_time, created_user "
 
         "FROM images img "
         "INNER JOIN users usr "
@@ -85,14 +87,6 @@ def get_image_records_by_user(cursor, username):
 
 # This function generates image packages that contain all information from the images table.
 def generate_image_packages(db_query, cursor):
-    
-    # try:
-    #     get_attributes_sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'images' ORDER BY ORDINAL_POSITION"
-    #     cursor.execute(get_attributes_sql)
-    #     attributes = [attribute for sublist in cursor.fetchall() for attribute in sublist]
-    #     print(attributes)
-    # except (Exception, psycopg2.Error) as error :
-    #     print("Error while retrieving records:", error)
 
     attributes = [
         'image_id',
@@ -107,7 +101,6 @@ def generate_image_packages(db_query, cursor):
         'ex13_jpg_exists',
         'altitude',
         'azimuth',
-        'header',
         'filter_used',
         'airmass',
         'exposure_time',
@@ -115,15 +108,10 @@ def generate_image_packages(db_query, cursor):
         ]
 
     image_packages = []
-
     try:
         for index, record in enumerate(db_query):
             image_package = dict(zip(attributes, record))
             image_package.update({'recency_order': index})
-
-            # Extract site and base_filename for image path construction
-            base_filename = image_package['base_filename']
-            site = image_package['site']
             
             # Format the capture_date to a javascript-ready timestamp (eg. miliseconds)
             capture_date = image_package['capture_date'].timetuple()
@@ -135,22 +123,20 @@ def generate_image_packages(db_query, cursor):
             sort_timestamp_milis = 1000*int(time.mktime(sort_date))
             image_package['sort_date'] = sort_timestamp_milis
 
+            # Extract site and base_filename for image path construction
+            base_filename = image_package['base_filename']
+            site = image_package['site']
+
             jpg13_url = ''
-            fits13_url = ''
             # Get urls to some of the images, if they exist
             if image_package['ex13_jpg_exists']: 
                 full_jpg13_path = f"{site}/raw_data/2019/{base_filename}-EX13.jpg"
                 jpg13_url = s3.get_presigned_url(BUCKET_NAME,full_jpg13_path)
             image_package.update({'jpg13_url': jpg13_url})
 
-            if image_package['ex13_fits_exists']:
-                full_fits13_path = f"{site}/raw_data/2019/{base_filename}-EX13.fits.bz2"
-                fits13_url = s3.get_presigned_url(BUCKET_NAME,full_fits13_path)
-            image_package.update({'fits13_url': fits13_url})
-
             image_packages.append(image_package)
     except AttributeError:
-        print('Error: Missing attribute needed for image package generation.')
+        print('There was an error in the image package generation process. Check that sttributes line up with query results.')
 
     return image_packages
 

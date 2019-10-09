@@ -197,6 +197,10 @@ class ImagesByDateRange(Resource):
     def get(self, start_date, end_date):
         return data.get_images_by_date_range(start_date, end_date)
 
+class Fits13Url(Resource):
+    def get(self, site, base_filename):
+        return data.get_fits13_url(site, base_filename)
+
 #-----------------------------------------------------------------------------#
 
 # Site Configurations
@@ -256,5 +260,5 @@ api.add_resource(AllConfig,'/all/config/')
 
 api.add_resource(ImagesByUser, '/image_by_user/<string:username>/')
 api.add_resource(ImagesByDateRange, '/image_by_date_range/<string:start_date>/<string:end_date>/')
-
+api.add_resource(Fits13Url, '/fits13_url/<string:site>/<string:base_filename>/')
 
