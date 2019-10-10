@@ -120,6 +120,7 @@ if __name__=="__main__":
         {'uri': 'wmd/latest_images/3/', 'method': 'GET', 'payload':None},
         {'uri': 'image_by_user/wmd_admin/', 'method': 'GET', 'payload':None},
         {'uri': 'image_by_date_range/wmd_admin/2019-09-25 20:01:00/2019-09-25 21:00:00/', 'method': 'GET', 'payload':None},
+        {'uri': 'filtered_images/', 'method': 'GET', 'payload': filter_params},
     ]
 
     # Create GUI for choosing endpoints to testing

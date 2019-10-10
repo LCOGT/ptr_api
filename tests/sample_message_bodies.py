@@ -165,3 +165,11 @@ simple_config = {
 sample_upload_request = {
     "object_name": "raw_data/2019/a_file2.txt"
 }
+
+filter_params = {
+    "username":"wmd_admin",
+    "site":"wmd",
+    "start_date":"2019-09-25 20:01:00",
+    "end_date":"2019-09-25 21:00:00",
+    "filter":"w"
+    }

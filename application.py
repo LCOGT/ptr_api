@@ -198,8 +198,11 @@ class ImagesByDateRange(Resource):
         return data.get_images_by_date_range(username, start_date, end_date)
 
 class FilteredImages(Resource):
-    def get(self, filter_params):
-        return data.get_filtered_images(filter_params)
+    '''
+    NOTE: Dates must be in UTC timestamp format
+    '''
+    def get(self):
+       return data.get_filtered_images()
 
 #-----------------------------------------------------------------------------#
 
