@@ -52,33 +52,45 @@ def images_by_date_range(cursor, user_id, start_date, end_date):
 
 
 def filtered_images(cursor, filter_params):
-    start_date = filter_params.start_date
-    end_date = filter_params.end_date
-    site = filter_params.site
-    filter_used = filter_params.filter
+    sql = [
+    "SELECT image_id, base_filename, site, capture_date, sort_date, right_ascension, declination, "
+    "ex01_fits_exists, ex13_fits_exists, ex13_jpg_exists, altitude, azimuth, filter_used, airmass, "
+    "exposure_time, user_name "
 
-    sql = (
-        "SELECT image_id, base_filename, site, capture_date, sort_date, right_ascension, declination, "
-        "ex01_fits_exists, ex13_fits_exists, ex13_jpg_exists, altitude, azimuth, filter_used, airmass, "
-        "exposure_time, user_name "
+    "FROM images img "
+    "INNER JOIN users usr "
+    "ON usr.user_id = img.created_user "
+    "WHERE usr.user_name = %s "
+    ]
+    
+    username = filter_params['username']
+    site = filter_params['site']
+    filter = filter_params['filter']
+    start_date = filter_params['start_date']
+    end_date = filter_params['end_date']
+    params = []
 
-        "FROM images img "
-        "INNER JOIN users usr "
-        "ON usr.user_id = img.created_user "
-        "WHERE usr.user_name = %s "
-        "ORDER BY sort_date DESC "
-    )
+    if site:
+        sql.append("AND site= %s ")
+
+    if filter:
+        sql.append("AND filter_used=%s ")
+
+    if start_date and end_date:
+        sql.append("AND capture_date BETWEEN %s AND %s ")
+
+    sql.append("ORDER BY sort_date DESC ")
+    sql = ' '.join(sql)
+    print (sql)
 
     try:
-        cursor.execute(sql, (start_date, end_date, site, filter_used))
+        cursor.execute(sql, (username, site, filter, start_date, end_date))
         db_query = cursor.fetchall()
         images = generate_image_packages(db_query, cursor)
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
     
     return images
-
-
 
 
 def get_user_id(cursor, username):

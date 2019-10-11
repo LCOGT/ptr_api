@@ -117,14 +117,13 @@ def get_filtered_images():
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
     '''
     filter_params = request.args.to_dict()
-    print(filter_params)
     connection = None
     try:
         connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
 
-        #retrieve images given filter parameters
-        images = rds.filtered_images(filter_params)
+        #retrieve images with given filter parameters
+        images = rds.filtered_images(cursor, filter_params)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -159,6 +158,7 @@ def get_images_by_date_range(username, start_date, end_date):
             connection.close()
     
     return images
+    print(images)
 
 
 
