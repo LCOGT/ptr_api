@@ -64,27 +64,36 @@ def filtered_images(cursor, filter_params):
     ]
     
     username = filter_params['username']
+    filename = filter_params['filename']
     site = filter_params['site']
     filter = filter_params['filter']
     start_date = filter_params['start_date']
     end_date = filter_params['end_date']
-    params = []
+    params = [username, ]
+
+    if filename:
+        sql.append("AND base_filename=%s ")
+        params.append(filename)
 
     if site:
         sql.append("AND site= %s ")
+        params.append(site)
 
     if filter:
         sql.append("AND filter_used=%s ")
+        params.append(filter)
 
     if start_date and end_date:
         sql.append("AND capture_date BETWEEN %s AND %s ")
+        params.append(start_date)
+        params.append(end_date)
 
     sql.append("ORDER BY sort_date DESC ")
     sql = ' '.join(sql)
-    print (sql)
+    params = tuple(params)
 
     try:
-        cursor.execute(sql, (username, site, filter, start_date, end_date))
+        cursor.execute(sql, params)
         db_query = cursor.fetchall()
         images = generate_image_packages(db_query, cursor)
     except (Exception, psycopg2.Error) as error :

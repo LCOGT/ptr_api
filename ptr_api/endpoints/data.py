@@ -114,7 +114,7 @@ def get_k_recent_images(site, k=1):
 
 def get_filtered_images():
     '''
-    NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
+    NOTE: dates must be in UTC timestamp format -> 2019-07-10 04:00:00
     '''
     filter_params = request.args.to_dict()
     connection = None
@@ -133,57 +133,6 @@ def get_filtered_images():
     
     return images
 
-
-
-def get_images_by_date_range(username, start_date, end_date):
-    '''
-    NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
-    '''
-
-    connection = None
-    try:
-        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
-        cursor = connection.cursor()
-
-        # retrieve the user_id associated with the given username
-        user_id = rds.get_user_id(cursor, username)
-
-        #retrieve images given date range and username
-        images = rds.images_by_date_range(cursor, user_id, start_date, end_date)
-
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if connection is not None:
-            connection.close()
-    
-    return images
-    print(images)
-
-
-
-def get_images_by_date_range(username, start_date, end_date):
-    '''
-    NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
-    '''
-    connection = None
-    try:
-        connection = psycopg2.connect(**CONNECTION_PARAMETERS)
-        cursor = connection.cursor()
-
-        # retrieve the user_id associated with the given username
-        user_id = rds.get_user_id(cursor, username)
-
-        #retrieve images given date range and username
-        images = rds.images_by_date_range(cursor, user_id, start_date, end_date)
-
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if connection is not None:
-            connection.close()
-    
-    return images
 
 def get_images_by_user(username):
     ''' Retrieve all images taken by a user, and return metadata + urls. '''
