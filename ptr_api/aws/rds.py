@@ -37,21 +37,6 @@ def get_last_modified_by_site(cursor, connection, site, k):
 
     return images
 
-def images_by_date_range(cursor, user_id, start_date, end_date):
-    '''
-    NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
-    '''
-    sql = "SELECT * FROM images WHERE created_user=%s AND capture_date BETWEEN %s AND %s"
-    try:
-        cursor.execute(sql, (user_id, start_date, end_date,))
-        db_query = cursor.fetchall()
-        images = generate_image_packages(db_query, cursor)
-    except (Exception, psycopg2.Error) as error :
-        print("Error while retrieving records:", error)
-    
-    return images
-
-
 
 def filtered_images(cursor, filter_params):
     sql = [
