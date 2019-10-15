@@ -1,6 +1,6 @@
 from ptr_api.aws import s3, dynamodb, rds
 from flask import request, jsonify
-import json, os
+import json, os, time
 import psycopg2
 
 
@@ -149,7 +149,11 @@ def get_images_by_user(username):
     finally:
         if connection is not None:
             connection.close()
-    
     return json.dumps(images)
 
     
+def get_fits13_url(site, base_filename):
+    full_fits13_path = f"{site}/raw_data/2019/{base_filename}-EX13.fits.bz2"
+    fits13_url = s3.get_presigned_url(BUCKET_NAME,full_fits13_path)
+            
+    return fits13_url
