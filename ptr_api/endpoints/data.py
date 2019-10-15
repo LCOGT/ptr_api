@@ -112,16 +112,18 @@ def get_k_recent_images(site, k=1):
     return json.dumps(latest_k_files)
 
 
-def get_images_by_date_range(start_date, end_date):
+def get_filtered_images():
     '''
-    NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
+    NOTE: dates must be in UTC timestamp format -> 2019-07-10 04:00:00
     '''
+    filter_params = request.args.to_dict()
     connection = None
     try:
         connection = psycopg2.connect(**CONNECTION_PARAMETERS)
         cursor = connection.cursor()
 
-        images = rds.images_by_date_range(cursor, start_date, end_date)
+        #retrieve images with given filter parameters
+        images = rds.filtered_images(cursor, filter_params)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -130,6 +132,7 @@ def get_images_by_date_range(start_date, end_date):
             connection.close()
     
     return images
+
 
 def get_images_by_user(username):
     ''' Retrieve all images taken by a user, and return metadata + urls. '''
