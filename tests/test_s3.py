@@ -1,3 +1,4 @@
+from ptr_api import environment
 import pytest, re
 from ptr_api.aws import s3
 

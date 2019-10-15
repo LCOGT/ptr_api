@@ -37,19 +37,80 @@ def get_last_modified_by_site(cursor, connection, site, k):
 
     return images
 
-def images_by_date_range(cursor, start_date, end_date):
+def images_by_date_range(cursor, user_id, start_date, end_date):
     '''
     NOTE: start and end times must be in timestamp format -> 2019-07-10 04:00:00
     '''
-    sql = "SELECT base_filename FROM images WHERE capture_date BETWEEN %s AND %s"
-    images = []
+    sql = "SELECT * FROM images WHERE created_user=%s AND capture_date BETWEEN %s AND %s"
     try:
-        cursor.execute(sql, (start_date, end_date,))
-        images = [result[0] for result in cursor.fetchall()]
+        cursor.execute(sql, (user_id, start_date, end_date,))
+        db_query = cursor.fetchall()
+        images = generate_image_packages(db_query, cursor)
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
     
     return images
+
+
+
+def filtered_images(cursor, filter_params):
+    sql = [
+    "SELECT image_id, base_filename, site, capture_date, sort_date, right_ascension, declination, "
+    "ex01_fits_exists, ex13_fits_exists, ex13_jpg_exists, altitude, azimuth, filter_used, airmass, "
+    "exposure_time, user_name "
+
+    "FROM images img "
+    "INNER JOIN users usr "
+    "ON usr.user_id = img.created_user "
+    "WHERE usr.user_name = %s "
+    ]
+    
+    username = filter_params['username']
+    filename = filter_params['filename']
+    site = filter_params['site']
+    filter = filter_params['filter']
+    start_date = filter_params['start_date']
+    end_date = filter_params['end_date']
+    params = [username, ]
+
+    if filename:
+        sql.append("AND base_filename=%s ")
+        params.append(filename)
+
+    if site:
+        sql.append("AND site= %s ")
+        params.append(site)
+
+    if filter:
+        sql.append("AND filter_used=%s ")
+        params.append(filter)
+
+    if start_date and end_date:
+        sql.append("AND capture_date BETWEEN %s AND %s ")
+        params.append(start_date)
+        params.append(end_date)
+
+    sql.append("ORDER BY sort_date DESC ")
+    sql = ' '.join(sql)
+    params = tuple(params)
+
+    try:
+        cursor.execute(sql, params)
+        db_query = cursor.fetchall()
+        images = generate_image_packages(db_query, cursor)
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+    
+    return images
+
+
+def get_user_id(cursor, username):
+    sql = "SELECT user_id FROM users WHERE user_name = %s"
+    try:
+        cursor.execute(sql, (username,))
+        user_id = cursor.fetchone()
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
 
 
 def get_image_records_by_user(cursor, username):

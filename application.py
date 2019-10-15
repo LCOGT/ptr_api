@@ -190,12 +190,12 @@ class ImagesByUser(Resource):
     def get(self, username):
         return data.get_images_by_user(username)
 
-class ImagesByDateRange(Resource):
+class FilteredImages(Resource):
     '''
-    NOTE: Dates must be in UTC timestamp format
+    NOTE: Dates must be in UTC timestamp format -> 2019-07-10 04:00:00
     '''
-    def get(self, start_date, end_date):
-        return data.get_images_by_date_range(start_date, end_date)
+    def get(self):
+       return data.get_filtered_images()
 
 class Fits13Url(Resource):
     def get(self, site, base_filename):
@@ -259,6 +259,5 @@ api.add_resource(Config,'/<string:site>/config/')
 api.add_resource(AllConfig,'/all/config/')
 
 api.add_resource(ImagesByUser, '/image_by_user/<string:username>/')
-api.add_resource(ImagesByDateRange, '/image_by_date_range/<string:start_date>/<string:end_date>/')
+api.add_resource(FilteredImages, '/filtered_images/')
 api.add_resource(Fits13Url, '/fits13_url/<string:site>/<string:base_filename>/')
-
