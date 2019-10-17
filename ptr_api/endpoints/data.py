@@ -154,6 +154,8 @@ def get_images_by_user(username):
     
 def get_fits13_url(site, base_filename):
     full_fits13_path = f"{site}/raw_data/2019/{base_filename}-EX13.fits.bz2"
-    fits13_url = s3.get_presigned_url(BUCKET_NAME,full_fits13_path)
+    return s3.get_presigned_url(BUCKET_NAME,full_fits13_path)
             
-    return fits13_url
+def get_fits01_url(site, base_filename):
+    full_fits01_path = f"{site}/raw_data/2019/{base_filename}-EX01.fits.bz2"
+    return s3.get_presigned_url(BUCKET_NAME,full_fits01_path)
