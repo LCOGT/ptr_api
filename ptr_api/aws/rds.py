@@ -52,6 +52,8 @@ def filtered_images(cursor, filter_params):
     
     username = filter_params['username']
     filename = filter_params['filename']
+    exposure_time_min = filter_params['exposure_time_min']
+    exposure_time_max = filter_params['exposure_time_max']
     site = filter_params['site']
     filter = filter_params['filter']
     start_date = filter_params['start_date']
@@ -61,6 +63,14 @@ def filtered_images(cursor, filter_params):
     if filename:
         sql.append("AND base_filename=%s ")
         params.append(filename)
+
+    if exposure_time_min and exposure_time_max:
+        sql.append("AND exposure_time BETWEEN %s AND %s ")
+        params.append(exposure_time_min)
+        params.append(exposure_time_max)
+    elif exposure_time_min:
+        sql.append("AND exposure_time=%s ")
+        params.append(exposure_time_min)
 
     if site:
         sql.append("AND site= %s ")
