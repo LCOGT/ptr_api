@@ -11,7 +11,9 @@ sqs_r = boto3.resource('sqs', REGION)
 sqs_c = boto3.client('sqs', REGION)
 
 def create_queue(queue_name):
-
+    ''' Note: unlike the 'create_table' function in dynamodb.py, this function 
+    does not return a queue. I'm not sure why this was the original design 
+    choice. Might want to improve this later. '''
 
     queue_attributes = {
         'FifoQueue': 'true',
@@ -24,26 +26,30 @@ def create_queue(queue_name):
     try: 
         queue = sqs_r.get_queue_by_name(QueueName=queue_name)
         print(f"Queue already exists (did not create): {queue_name}")
+        return
 
     # If the queue doesn't exist, try to create it.
     except:
+        pass
 
-        # Loop until the queue exists:
-        queue_exists = False
-        while not queue_exists:
+    # Loop until the queue exists:
+    queue_exists = False
+    number_of_retries = 0
+    while not queue_exists:
 
-            try:
-                queue = sqs_r.create_queue(QueueName=queue_name, Attributes=queue_attributes)
-                print(f"Created queue: {queue_name}")
-                queue_exists = True
+        try:
+            queue = sqs_r.create_queue(QueueName=queue_name, Attributes=queue_attributes)
+            print(f"Created queue: {queue_name}")
+            queue_exists = True
 
-            # Creation will fail if it was deleted in the last 60 seconds.
-            # If this is the case, retry every few seconds until success.
-            except ClientError as e:
-                if e.response['Error']['Code'] == 'AWS.SimpleQueueService.QueueDeletedRecently':
-                    print('Recently deleted queues require 60 before creating another with the same name.')
-                    print('Retrying in 5 seconds...')
-                    time.sleep(5)
+        # Creation will fail if it was deleted in the last 60 seconds.
+        # If this is the case, retry every few seconds until success.
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'AWS.SimpleQueueService.QueueDeletedRecently':
+                print('Recently deleted queues require 60 before creating another with the same name.')
+                print('Retrying in 5 seconds...')
+                number_of_retries += 1
+                time.sleep(5)
             
 
 def get_queue_item(queue_name):

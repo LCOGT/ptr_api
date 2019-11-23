@@ -31,15 +31,22 @@ def create_table(table_name, hash_name='Type', read_throughput=2, write_throughp
             }
         )
         print(f"Successfully created dynamodb table: {table_name}")
+        return table
     except: 
-        try:
-            response = dynamodb_c.describe_table(TableName=table_name)
-            table = dynamodb_r.Table(table_name)
-            print(f"Table did not create: table {table_name} already exists.")
-        except:
-            print('There was an error creating the table ' + table_name)
+        pass
 
-    return table
+    # This try-except block only runs if the previous one failed. 
+    try:
+        response = dynamodb_c.describe_table(TableName=table_name)
+        table = dynamodb_r.Table(table_name)
+        print(f"Table did not create: table {table_name} already exists.")
+        return table
+    except:
+        print('There was an error creating the table ' + table_name)
+
+    # If we were unable to create a table successfully.
+    return None
+
 
 
 def get_table(table_name):
