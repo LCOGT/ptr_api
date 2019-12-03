@@ -61,7 +61,7 @@ def filtered_images(cursor, filter_params):
     params = [username, ]
 
     if filename:
-        sql.append("AND base_filename=%s ")
+        sql.append("AND base_filename ~* %s ")
         params.append(filename)
 
     if exposure_time_min and exposure_time_max:
