@@ -50,14 +50,16 @@ def filtered_images(cursor, filter_params):
     "WHERE usr.user_name = %s "
     ]
     
-    username = filter_params['username']
-    filename = filter_params['filename']
-    exposure_time_min = filter_params['exposure_time_min']
-    exposure_time_max = filter_params['exposure_time_max']
-    site = filter_params['site']
-    filter = filter_params['filter']
-    start_date = filter_params['start_date']
-    end_date = filter_params['end_date']
+    username = filter_params.get('username', None)
+    filename = filter_params.get('filename', None)
+    exposure_time_min = filter_params.get('exposure_time_min', None)
+    exposure_time_max = filter_params.get('exposure_time_max', None)
+    site = filter_params.get('site', None)
+    filter = filter_params.get('filter', None)
+    start_date = filter_params.get('start_date', None)
+    end_date = filter_params.get('end_date', None)
+
+    # We need to query at least one parameter. 
     params = [username, ]
 
     if filename:
