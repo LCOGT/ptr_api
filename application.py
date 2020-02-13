@@ -204,6 +204,11 @@ class Fits01Url(Resource):
     def get(self, site, base_filename):
         return data.get_fits01_url(site, base_filename)
 
+class FitsHeader(Resource):
+    def get(self, site, base_filename):
+        print('getting fits header 0')
+        return data.get_fits_header(site, base_filename)
+
 #-----------------------------------------------------------------------------#
 
 # Site Configurations
@@ -265,4 +270,5 @@ api.add_resource(ImagesByUser, '/image_by_user/<string:username>/')
 api.add_resource(FilteredImages, '/filtered_images/')
 api.add_resource(Fits13Url, '/fits13_url/<string:site>/<string:base_filename>/')
 api.add_resource(Fits01Url, '/fits01_url/<string:site>/<string:base_filename>/')
+api.add_resource(FitsHeader, '/fitsheader/<string:site>/<string:base_filename>/')
 

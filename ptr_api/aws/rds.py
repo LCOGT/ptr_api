@@ -4,7 +4,7 @@
 # make sure data/rds keep seperate logic and use image package where you can
 # create header table in database and only store int
 # rename functions where appropriate
-import boto3, os, sys
+import boto3, os, sys, json
 import psycopg2
 import datetime, time, re
 from ptr_api.aws import s3
@@ -109,6 +109,20 @@ def get_user_id(cursor, username):
     except (Exception, psycopg2.Error) as error :
         print("Error while retrieving records:", error)
 
+def get_the_fits_header(cursor, base_filename):
+    print('getting fits header2')
+    sql = "SELECT header FROM images WHERE base_filename = %s"
+    try: 
+        cursor.execute(sql, (base_filename,))
+        header = cursor.fetchone()
+        if header[0]: return json.loads(header[0])
+        else: return []
+    except (Exception, psycopg2.Error) as error :
+        print("Error while retrieving records:", error)
+        return "Unable to retrieve header." 
+    print(header)
+    return json.loads(header[0])
+
 
 def get_image_records_by_user(cursor, username):
     
@@ -197,4 +211,3 @@ def generate_image_packages(db_query, cursor):
         print('There was an error in the image package generation process. Check that sttributes line up with query results.')
 
     return image_packages
-

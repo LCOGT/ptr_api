@@ -159,3 +159,13 @@ def get_fits13_url(site, base_filename):
 def get_fits01_url(site, base_filename):
     full_fits01_path = f"{site}/raw_data/2019/{base_filename}-EX01.fits.bz2"
     return s3.get_presigned_url(BUCKET_NAME,full_fits01_path)
+
+def get_fits_header(site, base_filename):
+    print('getting fits header')
+    header = []
+    connection = None
+    connection = psycopg2.connect(**CONNECTION_PARAMETERS)
+    cursor = connection.cursor()
+    result = rds.get_the_fits_header(cursor,base_filename)
+    return result 
+

@@ -4,6 +4,7 @@ venv/
 .vscode/
 __pycache__/
 other/
+*.pyc
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
