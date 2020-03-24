@@ -1,6 +1,8 @@
+:warning: **This code is deprecated.** It has been replaced by [photonranch-api](https://github.com/LCOGT/photonranch-api). 
+
 # ptr_api
 
-This repo contains Photon Ranch's RESTful API built using the Flask web framework. This API provides a method of communication between AWS and Photon Ranch's front-end web application as well as observatory-side applications.
+This repo contains Photon Ranch's API built using the Flask web framework. This API provides a method of communication between AWS and Photon Ranch's front-end web application as well as observatory-side applications.
 
 ## Getting Started
 
